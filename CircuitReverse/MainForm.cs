@@ -94,7 +94,7 @@ namespace CircuitReverse
 			}
 		}
 
-		public static void DrawPanelImage(Graphics g, Image img, Size size)
+		public static double DrawPanelImage(Graphics g, Image img, Size size)
 		{
 			var scale_x = size.Width / (float)img.Width;
 			var scale_y = size.Height / (float)img.Height;
@@ -105,6 +105,7 @@ namespace CircuitReverse
 				var h = img.Height * scale_y;
 				var fw = size.Width;
 				g.DrawImage(img, (fw - w) / 2, 0, w, h);
+				return scale_y;
 			}
 			else
 			{
@@ -112,6 +113,7 @@ namespace CircuitReverse
 				var h = img.Height * scale_x;
 				var fh = size.Height;
 				g.DrawImage(img, 0, (fh - h) / 2, w, h);
+				return scale_x;
 			}
 		}
 

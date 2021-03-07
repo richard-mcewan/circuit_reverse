@@ -48,6 +48,8 @@
     <Compile Include="BufferedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ImageClipper.cs" />
+    <Compile Include="MatrixInv.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

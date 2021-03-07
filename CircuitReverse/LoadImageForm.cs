@@ -125,7 +125,8 @@ namespace CircuitReverse
 		{
 			if ( ClipPoints.Count == 4 )
 			{
-				//
+				img = ImageClipper.ClipImage(img, ClipPoints);
+				ImageClearClipButton_Click(sender, e);
 			}
 		}
 	}
