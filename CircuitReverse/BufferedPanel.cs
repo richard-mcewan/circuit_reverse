@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace CircuitReverse
 {
-	class BufferedPanel : Panel
+	public class BufferedPanel : Panel
 	{
 		public BufferedPanel()
 		{

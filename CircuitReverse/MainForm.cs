@@ -22,8 +22,6 @@ namespace CircuitReverse
 
 		private Point Crosshair;
 
-		public enum LayerEnum { I_TOP, I_BOTTOM };
-
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
 			LoadTopButton.Location = new Point(12, Size.Height - 74);
@@ -41,12 +39,26 @@ namespace CircuitReverse
 
 		private void LoadTopButton_Click(object sender, EventArgs e)
 		{
-			new LoadImageForm(LayerEnum.I_TOP, this);
+			using (var f = new LoadImageForm())
+			{
+				if ( f.ShowDialog() == DialogResult.OK )
+				{
+					TopImage = f.img;
+					TopPanel.Invalidate();
+				}
+			}
 		}
 
 		private void LoadBottomButton_Click(object sender, EventArgs e)
 		{
-			new LoadImageForm(LayerEnum.I_BOTTOM, this);
+			using (var f = new LoadImageForm())
+			{
+				if (f.ShowDialog() == DialogResult.OK)
+				{
+					BottomImage = f.img;
+					BottomPanel.Invalidate();
+				}
+			}
 		}
 
 		private void TopPanel_Paint(object sender, PaintEventArgs e)
@@ -78,20 +90,6 @@ namespace CircuitReverse
 			Crosshair = e.Location;
 			TopPanel.Invalidate();
 			BottomPanel.Invalidate();
-		}
-
-		public void SetImage(Image img, LayerEnum layer)
-		{
-			if (layer == LayerEnum.I_TOP)
-			{
-				TopImage = img;
-				TopPanel.Invalidate();
-			}
-			else if (layer == LayerEnum.I_BOTTOM)
-			{
-				BottomImage = img;
-				BottomPanel.Invalidate();
-			}
 		}
 
 		public static double DrawPanelImage(Graphics g, Image img, Size size)

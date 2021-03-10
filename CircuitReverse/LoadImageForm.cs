@@ -12,20 +12,14 @@ namespace CircuitReverse
 {
 	public partial class LoadImageForm : Form
 	{
-		private Image img = null;
+		public Image img = null;
 		private Point Crosshair;
 		private bool ShowCrosshair = false;
 		private List<Point> ClipPoints = new List<Point>();
 
-		private readonly MainForm.LayerEnum layer;
-		private readonly MainForm parent;
-
-		public LoadImageForm(MainForm.LayerEnum l, MainForm p)
+		public LoadImageForm()
 		{
 			InitializeComponent();
-			layer = l;
-			parent = p;
-			ShowDialog();
 		}
 
 		private void LoadImageForm_Load(object sender, EventArgs e)
@@ -88,12 +82,6 @@ namespace CircuitReverse
 					ImageClipButton.Enabled = true;
 				}
 			}
-		}
-
-		private void ImageOKButton_Click(object sender, EventArgs e)
-		{
-			parent.SetImage(img, layer);
-			Close();
 		}
 
 		private void ImageFlipButton_Click(object sender, EventArgs e)

@@ -40,13 +40,13 @@
 			// 
 			// ImageOKButton
 			// 
+			this.ImageOKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.ImageOKButton.Location = new System.Drawing.Point(237, 318);
 			this.ImageOKButton.Name = "ImageOKButton";
 			this.ImageOKButton.Size = new System.Drawing.Size(75, 23);
 			this.ImageOKButton.TabIndex = 1;
 			this.ImageOKButton.Text = "OK";
 			this.ImageOKButton.UseVisualStyleBackColor = true;
-			this.ImageOKButton.Click += new System.EventHandler(this.ImageOKButton_Click);
 			// 
 			// OpenImageDialog
 			// 
