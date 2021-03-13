@@ -28,10 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.LoadTopButton = new System.Windows.Forms.Button();
-			this.TopPanel = new BufferedPanel();
-			this.BottomPanel = new BufferedPanel();
+			this.TopPanel = new CircuitReverse.BufferedPanel();
+			this.BottomPanel = new CircuitReverse.BufferedPanel();
 			this.LoadBottomButton = new System.Windows.Forms.Button();
+			this.RefreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// LoadTopButton
@@ -74,6 +76,12 @@
 			this.LoadBottomButton.UseVisualStyleBackColor = true;
 			this.LoadBottomButton.Click += new System.EventHandler(this.LoadBottomButton_Click);
 			// 
+			// RefreshTimer
+			// 
+			this.RefreshTimer.Enabled = true;
+			this.RefreshTimer.Interval = 30;
+			this.RefreshTimer.Tick += new System.EventHandler(this.RefreshTimer_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -97,6 +105,7 @@
 		private BufferedPanel TopPanel;
 		private BufferedPanel BottomPanel;
 		private System.Windows.Forms.Button LoadBottomButton;
+		private System.Windows.Forms.Timer RefreshTimer;
 	}
 }
 

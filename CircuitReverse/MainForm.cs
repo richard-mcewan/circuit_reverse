@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CircuitReverse
@@ -17,9 +11,6 @@ namespace CircuitReverse
 			InitializeComponent();
 		}
 
-		private Image TopImage = null;
-		private Image BottomImage = null;
-
 		private Point Crosshair;
 
 		private void MainForm_Resize(object sender, EventArgs e)
@@ -29,11 +20,9 @@ namespace CircuitReverse
 			LoadBottomButton.Location = new Point(138, Size.Height - 74);
 			
 			TopPanel.Size = new Size(Size.Width / 3, Size.Height - 92);
-			TopPanel.Invalidate();
 
 			BottomPanel.Size = new Size(Size.Width / 3, Size.Height - 92);
 			BottomPanel.Location = new Point(Size.Width / 3 + 18, BottomPanel.Location.Y);
-			BottomPanel.Invalidate();
 
 		}
 
@@ -43,8 +32,7 @@ namespace CircuitReverse
 			{
 				if ( f.ShowDialog() == DialogResult.OK )
 				{
-					TopImage = f.img;
-					TopPanel.Invalidate();
+					TopPanel.img = f.getImage();
 				}
 			}
 		}
@@ -55,8 +43,7 @@ namespace CircuitReverse
 			{
 				if (f.ShowDialog() == DialogResult.OK)
 				{
-					BottomImage = f.img;
-					BottomPanel.Invalidate();
+					BottomPanel.img = f.getImage();
 				}
 			}
 		}
@@ -64,11 +51,7 @@ namespace CircuitReverse
 		private void TopPanel_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-
-			if (!(TopImage is null))
-			{
-				DrawPanelImage(g, TopImage, TopPanel.Size);
-			}
+			TopPanel.DrawPanelImage(g);
 
 			DrawPanelCrosshair(g, TopPanel.Size, Crosshair);
 		}
@@ -76,11 +59,7 @@ namespace CircuitReverse
 		private void BottomPanel_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-
-			if (!(BottomImage is null))
-			{
-				DrawPanelImage(g, BottomImage, BottomPanel.Size);
-			}
+			BottomPanel.DrawPanelImage(g);
 
 			DrawPanelCrosshair(g, BottomPanel.Size, Crosshair);
 		}
@@ -88,31 +67,6 @@ namespace CircuitReverse
 		private void TopBottomPanel_MouseMove(object sender, MouseEventArgs e)
 		{
 			Crosshair = e.Location;
-			TopPanel.Invalidate();
-			BottomPanel.Invalidate();
-		}
-
-		public static double DrawPanelImage(Graphics g, Image img, Size size)
-		{
-			var scale_x = size.Width / (float)img.Width;
-			var scale_y = size.Height / (float)img.Height;
-
-			if (scale_x > scale_y)
-			{
-				var w = img.Width * scale_y;
-				var h = img.Height * scale_y;
-				var fw = size.Width;
-				g.DrawImage(img, (fw - w) / 2, 0, w, h);
-				return scale_y;
-			}
-			else
-			{
-				var w = img.Width * scale_x;
-				var h = img.Height * scale_x;
-				var fh = size.Height;
-				g.DrawImage(img, 0, (fh - h) / 2, w, h);
-				return scale_x;
-			}
 		}
 
 		public static void DrawPanelCrosshair(Graphics g, Size size, Point p)
@@ -120,6 +74,12 @@ namespace CircuitReverse
 			Pen pn = new Pen(Color.Black, 1);
 			g.DrawLine(pn, p.X, 0, p.X, size.Height);
 			g.DrawLine(pn, 0, p.Y, size.Width, p.Y);
+		}
+
+		private void RefreshTimer_Tick(object sender, EventArgs e)
+		{
+			TopPanel.Invalidate();
+			BottomPanel.Invalidate();
 		}
 	}
 }
