@@ -15,6 +15,9 @@ namespace CircuitReverse
 		public double ImageScale;
 		public float ImageWidthScale = 1;
 
+		public Point Crosshair;
+		public bool ShowCrosshair = false;
+
 		public bool DrawPanelImage(Graphics g, float whscale = 0)
 		{
 			if ( img is null )
@@ -51,6 +54,16 @@ namespace CircuitReverse
 			}
 
 			return true;
+		}
+
+		public void DrawPanelCrosshair(Graphics g)
+		{
+			if (ShowCrosshair)
+			{
+				Pen pn = new Pen(Color.Black, 1);
+				g.DrawLine(pn, Crosshair.X, 0, Crosshair.X, Size.Height);
+				g.DrawLine(pn, 0, Crosshair.Y, Size.Width, Crosshair.Y);
+			}
 		}
 
 		public Point PanelToImage(Point p)

@@ -7,8 +7,6 @@ namespace CircuitReverse
 {
 	public partial class LoadImageForm : Form
 	{
-		private Point Crosshair;
-		private bool ShowCrosshair = false;
 		private List<Point> ClipPoints = new List<Point>();
 
 		public LoadImageForm()
@@ -54,32 +52,29 @@ namespace CircuitReverse
 			Graphics g = e.Graphics;
 			if (ImagePanel.DrawPanelImage(g, (float)ImageScaleInput.Value))
 			{
-				if (ShowCrosshair)
-				{
-					MainForm.DrawPanelCrosshair(g, ImagePanel.Size, Crosshair);
-				}
-
 				foreach (var p in ClipPoints)
 				{
 					var pp = ImagePanel.ImageToPanel(p);
 					g.FillEllipse(Brushes.Red, pp.X - 4, pp.Y - 4, 8, 8);
 				}
+
+				ImagePanel.DrawPanelCrosshair(g);
 			}
 		}
 
 		private void ImagePanel_MouseMove(object sender, MouseEventArgs e)
 		{
-			Crosshair = e.Location;
+			ImagePanel.Crosshair = e.Location;
 		}
 
 		private void ImagePanel_MouseEnter(object sender, EventArgs e)
 		{
-			ShowCrosshair = true;
+			ImagePanel.ShowCrosshair = true;
 		}
 
 		private void ImagePanel_MouseLeave(object sender, EventArgs e)
 		{
-			ShowCrosshair = false;
+			ImagePanel.ShowCrosshair = false;
 		}
 
 		private void ImagePanel_MouseClick(object sender, MouseEventArgs e)

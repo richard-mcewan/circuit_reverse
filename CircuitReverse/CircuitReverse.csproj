@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,6 +49,7 @@
     <Compile Include="BufferedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DrawingElements.cs" />
     <Compile Include="ImageClipper.cs" />
     <Compile Include="MatrixInv.cs" />
     <Compile Include="MainForm.cs">
