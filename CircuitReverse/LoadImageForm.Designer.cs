@@ -31,14 +31,15 @@
 			this.components = new System.ComponentModel.Container();
 			this.ImageOKButton = new System.Windows.Forms.Button();
 			this.OpenImageDialog = new System.Windows.Forms.OpenFileDialog();
-			this.ImageFlipButton = new System.Windows.Forms.Button();
-			this.ImageRotateLeftButton = new System.Windows.Forms.Button();
-			this.ImageRotateRightButton = new System.Windows.Forms.Button();
-			this.ImageClipButton = new System.Windows.Forms.Button();
-			this.ImageClearClipButton = new System.Windows.Forms.Button();
 			this.RefreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.ImagePanel = new CircuitReverse.BufferedPanel();
 			this.ImageScaleInput = new System.Windows.Forms.NumericUpDown();
+			this.ImageResetButton = new System.Windows.Forms.Button();
+			this.ImageClipButton = new System.Windows.Forms.Button();
+			this.ImageRotateRightButton = new System.Windows.Forms.Button();
+			this.ImageRotateLeftButton = new System.Windows.Forms.Button();
+			this.ImageFlipButton = new System.Windows.Forms.Button();
+			this.ImageScaleButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.ImageScaleInput)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -55,57 +56,6 @@
 			// OpenImageDialog
 			// 
 			this.OpenImageDialog.Filter = "Image|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tif";
-			// 
-			// ImageFlipButton
-			// 
-			this.ImageFlipButton.Image = global::CircuitReverse.Properties.Resources.FlipHorizontal_16x;
-			this.ImageFlipButton.Location = new System.Drawing.Point(12, 368);
-			this.ImageFlipButton.Name = "ImageFlipButton";
-			this.ImageFlipButton.Size = new System.Drawing.Size(23, 23);
-			this.ImageFlipButton.TabIndex = 2;
-			this.ImageFlipButton.UseVisualStyleBackColor = true;
-			this.ImageFlipButton.Click += new System.EventHandler(this.ImageFlipButton_Click);
-			// 
-			// ImageRotateLeftButton
-			// 
-			this.ImageRotateLeftButton.Image = global::CircuitReverse.Properties.Resources.RotateLeft_16x;
-			this.ImageRotateLeftButton.Location = new System.Drawing.Point(41, 368);
-			this.ImageRotateLeftButton.Name = "ImageRotateLeftButton";
-			this.ImageRotateLeftButton.Size = new System.Drawing.Size(23, 23);
-			this.ImageRotateLeftButton.TabIndex = 3;
-			this.ImageRotateLeftButton.UseVisualStyleBackColor = true;
-			this.ImageRotateLeftButton.Click += new System.EventHandler(this.ImageRotateLeftButton_Click);
-			// 
-			// ImageRotateRightButton
-			// 
-			this.ImageRotateRightButton.Image = global::CircuitReverse.Properties.Resources.RotateRight_16x;
-			this.ImageRotateRightButton.Location = new System.Drawing.Point(70, 368);
-			this.ImageRotateRightButton.Name = "ImageRotateRightButton";
-			this.ImageRotateRightButton.Size = new System.Drawing.Size(23, 23);
-			this.ImageRotateRightButton.TabIndex = 4;
-			this.ImageRotateRightButton.UseVisualStyleBackColor = true;
-			this.ImageRotateRightButton.Click += new System.EventHandler(this.ImageRotateRightButton_Click);
-			// 
-			// ImageClipButton
-			// 
-			this.ImageClipButton.Enabled = false;
-			this.ImageClipButton.Location = new System.Drawing.Point(99, 368);
-			this.ImageClipButton.Name = "ImageClipButton";
-			this.ImageClipButton.Size = new System.Drawing.Size(75, 23);
-			this.ImageClipButton.TabIndex = 5;
-			this.ImageClipButton.Text = "Clip";
-			this.ImageClipButton.UseVisualStyleBackColor = true;
-			this.ImageClipButton.Click += new System.EventHandler(this.ImageClipButton_Click);
-			// 
-			// ImageClearClipButton
-			// 
-			this.ImageClearClipButton.Image = global::CircuitReverse.Properties.Resources.Cancel_16x;
-			this.ImageClearClipButton.Location = new System.Drawing.Point(180, 368);
-			this.ImageClearClipButton.Name = "ImageClearClipButton";
-			this.ImageClearClipButton.Size = new System.Drawing.Size(23, 23);
-			this.ImageClearClipButton.TabIndex = 0;
-			this.ImageClearClipButton.UseVisualStyleBackColor = true;
-			this.ImageClearClipButton.Click += new System.EventHandler(this.ImageClearClipButton_Click);
 			// 
 			// RefreshTimer
 			// 
@@ -134,19 +84,81 @@
             0,
             0,
             131072});
-			this.ImageScaleInput.Location = new System.Drawing.Point(210, 370);
+			this.ImageScaleInput.Location = new System.Drawing.Point(99, 371);
 			this.ImageScaleInput.Name = "ImageScaleInput";
-			this.ImageScaleInput.Size = new System.Drawing.Size(71, 20);
+			this.ImageScaleInput.Size = new System.Drawing.Size(95, 20);
 			this.ImageScaleInput.TabIndex = 6;
+			// 
+			// ImageResetButton
+			// 
+			this.ImageResetButton.Image = global::CircuitReverse.Properties.Resources.Cancel_16x;
+			this.ImageResetButton.Location = new System.Drawing.Point(258, 368);
+			this.ImageResetButton.Name = "ImageResetButton";
+			this.ImageResetButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageResetButton.TabIndex = 0;
+			this.ImageResetButton.UseVisualStyleBackColor = true;
+			this.ImageResetButton.Click += new System.EventHandler(this.ImageResetButton_Click);
+			// 
+			// ImageClipButton
+			// 
+			this.ImageClipButton.Enabled = false;
+			this.ImageClipButton.Image = global::CircuitReverse.Properties.Resources.ImageMap_16x;
+			this.ImageClipButton.Location = new System.Drawing.Point(229, 368);
+			this.ImageClipButton.Name = "ImageClipButton";
+			this.ImageClipButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageClipButton.TabIndex = 5;
+			this.ImageClipButton.UseVisualStyleBackColor = true;
+			this.ImageClipButton.Click += new System.EventHandler(this.ImageClipButton_Click);
+			// 
+			// ImageRotateRightButton
+			// 
+			this.ImageRotateRightButton.Image = global::CircuitReverse.Properties.Resources.RotateRight_16x;
+			this.ImageRotateRightButton.Location = new System.Drawing.Point(70, 368);
+			this.ImageRotateRightButton.Name = "ImageRotateRightButton";
+			this.ImageRotateRightButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageRotateRightButton.TabIndex = 4;
+			this.ImageRotateRightButton.UseVisualStyleBackColor = true;
+			this.ImageRotateRightButton.Click += new System.EventHandler(this.ImageRotateRightButton_Click);
+			// 
+			// ImageRotateLeftButton
+			// 
+			this.ImageRotateLeftButton.Image = global::CircuitReverse.Properties.Resources.RotateLeft_16x;
+			this.ImageRotateLeftButton.Location = new System.Drawing.Point(41, 368);
+			this.ImageRotateLeftButton.Name = "ImageRotateLeftButton";
+			this.ImageRotateLeftButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageRotateLeftButton.TabIndex = 3;
+			this.ImageRotateLeftButton.UseVisualStyleBackColor = true;
+			this.ImageRotateLeftButton.Click += new System.EventHandler(this.ImageRotateLeftButton_Click);
+			// 
+			// ImageFlipButton
+			// 
+			this.ImageFlipButton.Image = global::CircuitReverse.Properties.Resources.FlipHorizontal_16x;
+			this.ImageFlipButton.Location = new System.Drawing.Point(12, 368);
+			this.ImageFlipButton.Name = "ImageFlipButton";
+			this.ImageFlipButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageFlipButton.TabIndex = 2;
+			this.ImageFlipButton.UseVisualStyleBackColor = true;
+			this.ImageFlipButton.Click += new System.EventHandler(this.ImageFlipButton_Click);
+			// 
+			// ImageScaleButton
+			// 
+			this.ImageScaleButton.Image = global::CircuitReverse.Properties.Resources.ImageScale_16x;
+			this.ImageScaleButton.Location = new System.Drawing.Point(200, 368);
+			this.ImageScaleButton.Name = "ImageScaleButton";
+			this.ImageScaleButton.Size = new System.Drawing.Size(23, 23);
+			this.ImageScaleButton.TabIndex = 7;
+			this.ImageScaleButton.UseVisualStyleBackColor = true;
+			this.ImageScaleButton.Click += new System.EventHandler(this.ImageScaleButton_Click);
 			// 
 			// LoadImageForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(374, 403);
-			this.Controls.Add(this.ImageScaleInput);
-			this.Controls.Add(this.ImageClearClipButton);
 			this.Controls.Add(this.ImageClipButton);
+			this.Controls.Add(this.ImageScaleButton);
+			this.Controls.Add(this.ImageScaleInput);
+			this.Controls.Add(this.ImageResetButton);
 			this.Controls.Add(this.ImageRotateRightButton);
 			this.Controls.Add(this.ImageRotateLeftButton);
 			this.Controls.Add(this.ImageFlipButton);
@@ -172,8 +184,9 @@
 		private System.Windows.Forms.Button ImageRotateLeftButton;
 		private System.Windows.Forms.Button ImageRotateRightButton;
 		private System.Windows.Forms.Button ImageClipButton;
-		private System.Windows.Forms.Button ImageClearClipButton;
+		private System.Windows.Forms.Button ImageResetButton;
 		private System.Windows.Forms.Timer RefreshTimer;
 		private System.Windows.Forms.NumericUpDown ImageScaleInput;
+		private System.Windows.Forms.Button ImageScaleButton;
 	}
 }

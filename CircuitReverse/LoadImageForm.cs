@@ -25,9 +25,10 @@ namespace CircuitReverse
 			tt.SetToolTip(ImageFlipButton, "Mirror image horizontally");
 			tt.SetToolTip(ImageRotateLeftButton, "Rotate image 90 degrees left");
 			tt.SetToolTip(ImageRotateRightButton, "Rotate image 90 degrees right");
-			tt.SetToolTip(ImageClipButton, "Clip image projection");
-			tt.SetToolTip(ImageClearClipButton, "Remove projection points");
 			tt.SetToolTip(ImageScaleInput, "Height/Width ratio");
+			tt.SetToolTip(ImageScaleButton, "Set image scale (removes projection points)");
+			tt.SetToolTip(ImageClipButton, "Clip image projection");
+			tt.SetToolTip(ImageResetButton, "Remove projection points and reset image scale");
 		}
 
 		public Image getImage()
@@ -117,20 +118,27 @@ namespace CircuitReverse
 			ImageScaleInput.Value = 1 / ImageScaleInput.Value;
 		}
 
-		private void ImageClearClipButton_Click(object sender, EventArgs e)
+		private void ImageScaleButton_Click(object sender, EventArgs e)
 		{
-			ClipPoints.Clear();
-			ImageClipButton.Enabled = false;
+			ImagePanel.img = ImageClipper.ScaleImage(ImagePanel.img, (float)ImageScaleInput.Value);
+			ImageResetButton_Click(sender, e);
+			MessageBox.Show("Image scale set", "Done");
 		}
 
 		private void ImageClipButton_Click(object sender, EventArgs e)
 		{
-			if ( ClipPoints.Count == 4 )
+			if (ClipPoints.Count == 4)
 			{
 				ImagePanel.img = ImageClipper.ClipImage(ImagePanel.img, ClipPoints);
-				ImageScaleInput.Value = (decimal)ImagePanel.img.Height / ImagePanel.img.Width;
-				ImageClearClipButton_Click(sender, e);
+				ImageResetButton_Click(sender, e);
 			}
+		}
+
+		private void ImageResetButton_Click(object sender, EventArgs e)
+		{
+			ClipPoints.Clear();
+			ImageScaleInput.Value = (decimal)ImagePanel.img.Height / ImagePanel.img.Width;
+			ImageClipButton.Enabled = false;
 		}
 
 		private void LoadImageForm_Resize(object sender, EventArgs e)
@@ -140,12 +148,11 @@ namespace CircuitReverse
 			ImageFlipButton.Location = new Point(12, Size.Height - 72);
 			ImageRotateLeftButton.Location = new Point(41, Size.Height - 72);
 			ImageRotateRightButton.Location = new Point(70, Size.Height - 72);
-			ImageClipButton.Location = new Point(99, Size.Height - 72);
-			ImageClearClipButton.Location = new Point(180, Size.Height - 72);
+			ImageScaleInput.Location = new Point(99, Size.Height - 71); // different height
+			ImageScaleButton.Location = new Point(200, Size.Height - 72);
+			ImageClipButton.Location = new Point(229, Size.Height - 72);
+			ImageResetButton.Location = new Point(258, Size.Height - 72);
 			ImageOKButton.Location = new Point(Size.Width - 103, Size.Height - 72);
-
-			ImageScaleInput.Location = new Point(210, Size.Height - 72);
-			ImageScaleInput.Size = new Size(Size.Width - 319, 20);
 		}
 
 		private void RefreshTimer_Tick(object sender, EventArgs e)

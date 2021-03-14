@@ -83,6 +83,26 @@ namespace CircuitReverse.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ImageMap_16x {
+            get {
+                object obj = ResourceManager.GetObject("ImageMap_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImageScale_16x {
+            get {
+                object obj = ResourceManager.GetObject("ImageScale_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap RotateLeft_16x {
             get {
                 object obj = ResourceManager.GetObject("RotateLeft_16x", resourceCulture);

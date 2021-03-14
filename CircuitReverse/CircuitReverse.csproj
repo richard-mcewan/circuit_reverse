@@ -105,5 +105,11 @@
   <ItemGroup>
     <None Include="Resources\Cancel_16x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ImageScale_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ImageMap_16x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
