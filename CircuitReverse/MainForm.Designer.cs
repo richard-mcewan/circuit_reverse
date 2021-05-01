@@ -44,6 +44,7 @@
 			this.BottomPanel = new CircuitReverse.BufferedPanel();
 			this.TopPanel = new CircuitReverse.BufferedPanel();
 			this.ProjectOpenDialog = new System.Windows.Forms.OpenFileDialog();
+			this.objectPropertyGrid = new System.Windows.Forms.PropertyGrid();
 			this.menuStrip1.SuspendLayout();
 			this.statusStripMain.SuspendLayout();
 			this.SuspendLayout();
@@ -140,9 +141,9 @@
 			// BottomPanel
 			// 
 			this.BottomPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.BottomPanel.Location = new System.Drawing.Point(318, 27);
+			this.BottomPanel.Location = new System.Drawing.Point(300, 27);
 			this.BottomPanel.Name = "BottomPanel";
-			this.BottomPanel.Size = new System.Drawing.Size(288, 409);
+			this.BottomPanel.Size = new System.Drawing.Size(282, 409);
 			this.BottomPanel.TabIndex = 2;
 			this.BottomPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomPanel_Paint);
 			this.BottomPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseClick);
@@ -155,7 +156,7 @@
 			this.TopPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.TopPanel.Location = new System.Drawing.Point(12, 27);
 			this.TopPanel.Name = "TopPanel";
-			this.TopPanel.Size = new System.Drawing.Size(300, 409);
+			this.TopPanel.Size = new System.Drawing.Size(282, 409);
 			this.TopPanel.TabIndex = 1;
 			this.TopPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TopPanel_Paint);
 			this.TopPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseClick);
@@ -167,11 +168,19 @@
 			// 
 			this.ProjectOpenDialog.Filter = "ZIP file|*.zip";
 			// 
+			// objectPropertyGrid
+			// 
+			this.objectPropertyGrid.Location = new System.Drawing.Point(588, 27);
+			this.objectPropertyGrid.Name = "objectPropertyGrid";
+			this.objectPropertyGrid.Size = new System.Drawing.Size(284, 409);
+			this.objectPropertyGrid.TabIndex = 6;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(884, 461);
+			this.Controls.Add(this.objectPropertyGrid);
 			this.Controls.Add(this.statusStripMain);
 			this.Controls.Add(this.BottomPanel);
 			this.Controls.Add(this.TopPanel);
@@ -206,6 +215,7 @@
 		private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
 		private System.Windows.Forms.SaveFileDialog ProjectSaveDialog;
 		private System.Windows.Forms.OpenFileDialog ProjectOpenDialog;
+		private System.Windows.Forms.PropertyGrid objectPropertyGrid;
 	}
 }
 

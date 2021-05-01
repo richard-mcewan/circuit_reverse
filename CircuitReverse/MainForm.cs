@@ -9,22 +9,27 @@ namespace CircuitReverse
 {
 	public partial class MainForm : Form
 	{
+		private Project project = new Project();
+
+		private bool NetActive = false;
+		private int ActiveLine = 0;
+
 		public MainForm()
 		{
 			InitializeComponent();
+			TopPanel.LayerNumber = 0;
+			BottomPanel.LayerNumber = 1;
 		}
-
-		private string ProjectFilePath = "";
-
-		private bool NetActive = false;
-		private NetLine ActiveLine = new NetLine();
 
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
-			TopPanel.Size = new Size(Size.Width / 3, Size.Height - 91);
+			TopPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
 
-			BottomPanel.Size = new Size(Size.Width / 3, Size.Height - 91);
-			BottomPanel.Location = new Point(Size.Width / 3 + 18, 27);
+			BottomPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
+			BottomPanel.Location = new Point((Size.Width - 52) / 3 + 18, 27);
+
+			objectPropertyGrid.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
+			objectPropertyGrid.Location = new Point((Size.Width - 52) * 2 / 3 + 24, 27);
 		}
 
 		private void LoadTopMenu_Click(object sender, EventArgs e)
@@ -72,14 +77,21 @@ namespace CircuitReverse
 		private void DrawLayer(object sender, Graphics g)
 		{
 			var layer = sender as BufferedPanel;
-			var p = new Pen(ActiveLine.LineColor, 4);
-			for (int i = 0; i < ActiveLine.LinePoints.Count - 1; i++)
+			foreach (var line in project.Lines)
 			{
-				g.DrawLine(p, layer.ImageToPanel(ActiveLine.LinePoints[i]), layer.ImageToPanel(ActiveLine.LinePoints[i + 1]));
+				var p = new Pen(line.LineColor, 4);
+				var linepoints = line.LinePoints[layer.LayerNumber];
+				for (int i = 0; i < linepoints.Count - 1; i++)
+				{
+					g.DrawLine(p, layer.ImageToPanel(linepoints[i]), layer.ImageToPanel(linepoints[i + 1]));
+				}
 			}
 			if (NetActive)
 			{
-				g.DrawLine(p, layer.ImageToPanel(ActiveLine.LinePoints[ActiveLine.LinePoints.Count - 1]), layer.Crosshair);
+				var line = project.Lines[ActiveLine];
+				var p = new Pen(line.LineColor, 4);
+				var linepoints = line.LinePoints[layer.LayerNumber];
+				g.DrawLine(p, layer.ImageToPanel(linepoints[linepoints.Count - 1]), layer.Crosshair);
 			}
 		}
 
@@ -109,18 +121,23 @@ namespace CircuitReverse
 
 		private void TopBottomPanel_MouseClick(object sender, MouseEventArgs e)
 		{
-			var layer = sender as BufferedPanel;
 			if (e.Button == MouseButtons.Left)
 			{
 				if (!NetActive) {
-					ActiveLine.LinePoints.Clear();
 					NetActive = true;
+					project.Lines.Add(new NetLine());
+					ActiveLine = project.Lines.Count - 1;
 				}
-				ActiveLine.LinePoints.Add(layer.PanelToImage(e.Location));
+				project.Lines[ActiveLine].LinePoints[0].Add(TopPanel.CrosshairToImage());
+				project.Lines[ActiveLine].LinePoints[1].Add(BottomPanel.CrosshairToImage());
 			}
 			else if (e.Button == MouseButtons.Right)
 			{
 				NetActive = false;
+				if ( project.Lines[ActiveLine].LinePoints[0].Count < 2 && project.Lines[ActiveLine].LinePoints[1].Count < 2)
+				{
+					project.Lines.RemoveAt(ActiveLine);
+				}
 			}
 		}
 
@@ -136,12 +153,12 @@ namespace CircuitReverse
 
 		private void SaveProject(bool saveas)
 		{
-			if (ProjectFilePath == "" || saveas)
+			if (project.ProjectFilePath == "" || saveas)
 			{
 				if (ProjectSaveDialog.ShowDialog() == DialogResult.OK)
 				{
-					ProjectFilePath = ProjectSaveDialog.FileName;
-					Text = "CircuitReverse - " + ProjectFilePath;
+					project.ProjectFilePath = ProjectSaveDialog.FileName;
+					Text = "CircuitReverse - " + project.ProjectFilePath;
 				}
 				else
 				{
@@ -149,7 +166,7 @@ namespace CircuitReverse
 				}
 			}
 
-			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Create), ZipArchiveMode.Create))
+			using (var zip = new ZipArchive(new FileStream(project.ProjectFilePath, FileMode.Create), ZipArchiveMode.Create))
 			{
 				if (!(TopPanel.img is null))
 				{
@@ -176,15 +193,15 @@ namespace CircuitReverse
 		{
 			if (ProjectOpenDialog.ShowDialog() == DialogResult.OK)
 			{
-				ProjectFilePath = ProjectOpenDialog.FileName;
-				Text = "CircuitReverse - " + ProjectFilePath;
+				project.ProjectFilePath = ProjectOpenDialog.FileName;
+				Text = "CircuitReverse - " + project.ProjectFilePath;
 			}
 			else
 			{
 				return;
 			}
 
-			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Open), ZipArchiveMode.Read))
+			using (var zip = new ZipArchive(new FileStream(project.ProjectFilePath, FileMode.Open), ZipArchiveMode.Read))
 			{
 				var top = zip.GetEntry("top.png");
 				if ( !(top is null))

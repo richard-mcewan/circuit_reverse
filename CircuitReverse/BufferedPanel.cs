@@ -5,18 +5,20 @@ namespace CircuitReverse
 {
 	public class BufferedPanel : Panel
 	{
-		public BufferedPanel()
-		{
-			DoubleBuffered = true;
-			ResizeRedraw = true;
-		}
-
 		public Image img;
 		public double ImageScale;
 		public float ImageWidthScale = 1;
 
 		public Point Crosshair;
 		public bool ShowCrosshair = false;
+
+		public int LayerNumber = -1;
+
+		public BufferedPanel()
+		{
+			DoubleBuffered = true;
+			ResizeRedraw = true;
+		}
 
 		public bool DrawPanelImage(Graphics g, float whscale = 0)
 		{
@@ -78,6 +80,11 @@ namespace CircuitReverse
 			var x = (p.X - img.Size.Width / 2.0) * ImageScale + Size.Width / 2.0;
 			var y = (p.Y - img.Size.Height / 2.0) * ImageScale + Size.Height / 2.0;
 			return new Point(ImageClipper.dtoi(x), ImageClipper.dtoi(y));
+		}
+
+		public Point CrosshairToImage()
+		{
+			return PanelToImage(Crosshair);
 		}
 	}
 }
