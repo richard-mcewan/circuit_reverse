@@ -7,6 +7,13 @@ using System.IO.Compression;
 
 namespace CircuitReverse
 {
+	public enum ActiveTool
+	{
+		TOOL_NONE,
+		TOOL_LINE,
+		TOOL_PIN
+	}
+
 	public partial class MainForm : Form
 	{
 		private Project project = new Project();
@@ -17,21 +24,25 @@ namespace CircuitReverse
 		public MainForm()
 		{
 			InitializeComponent();
+			
+			// set panel layer numbers
 			TopPanel.LayerNumber = 0;
 			BottomPanel.LayerNumber = 1;
 		}
 
+		// Resize event for responsive form
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
-			TopPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
+			TopPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
 
-			BottomPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
-			BottomPanel.Location = new Point((Size.Width - 52) / 3 + 18, 27);
+			BottomPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
+			BottomPanel.Location = new Point((Size.Width - 52) / 3 + 18, BottomPanel.Location.Y);
 
-			objectPropertyGrid.Size = new Size((Size.Width - 52) / 3, Size.Height - 91);
-			objectPropertyGrid.Location = new Point((Size.Width - 52) * 2 / 3 + 24, 27);
+			objectPropertyGrid.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
+			objectPropertyGrid.Location = new Point((Size.Width - 52) * 2 / 3 + 24, objectPropertyGrid.Location.Y);
 		}
 
+		// Load images with LoadImageForm
 		private void LoadTopMenu_Click(object sender, EventArgs e)
 		{
 			using (var f = new LoadImageForm())
@@ -54,6 +65,8 @@ namespace CircuitReverse
 			}
 		}
 
+		// Panel Paint events
+		// Called from Form Control
 		private void TopPanel_Paint(object sender, PaintEventArgs e)
 		{
 			var g = e.Graphics;
@@ -74,9 +87,13 @@ namespace CircuitReverse
 			BottomPanel.DrawPanelCrosshair(g);
 		}
 
+		// Draw panel layers
+		// Called by Paint events
 		private void DrawLayer(object sender, Graphics g)
 		{
 			var layer = sender as BufferedPanel;
+
+			// Draw netlines
 			foreach (var line in project.Lines)
 			{
 				var p = new Pen(line.LineColor, 4);
@@ -86,6 +103,8 @@ namespace CircuitReverse
 					g.DrawLine(p, layer.ImageToPanel(linepoints[i]), layer.ImageToPanel(linepoints[i + 1]));
 				}
 			}
+
+			// Draw end of active net line
 			if (NetActive)
 			{
 				var line = project.Lines[ActiveLine];
@@ -95,12 +114,14 @@ namespace CircuitReverse
 			}
 		}
 
+		// Redraw panel
 		private void RefreshTimer_Tick(object sender, EventArgs e)
 		{
 			TopPanel.Invalidate();
 			BottomPanel.Invalidate();
 		}
 
+		// Set crosshair
 		private void TopBottomPanel_MouseMove(object sender, MouseEventArgs e)
 		{
 			TopPanel.Crosshair = e.Location;
@@ -119,6 +140,7 @@ namespace CircuitReverse
 			BottomPanel.ShowCrosshair = false;
 		}
 
+		// Panel mouse click event, active tool action
 		private void TopBottomPanel_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
@@ -141,6 +163,13 @@ namespace CircuitReverse
 			}
 		}
 
+		// Cancel active tool
+		private void toolCancel_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		// Save project
 		private void saveProjectMenu_Click(object sender, EventArgs e)
 		{
 			SaveProject(false);
@@ -189,6 +218,7 @@ namespace CircuitReverse
 			statusStripMain.Items["statusLabelDefault"].Text = "Project saved";
 		}
 
+		// Open project
 		private void openProjectMenu_Click(object sender, EventArgs e)
 		{
 			if (ProjectOpenDialog.ShowDialog() == DialogResult.OK)
@@ -222,6 +252,27 @@ namespace CircuitReverse
 				}
 			}
 			statusStripMain.Items["statusLabelDefault"].Text = "Project loaded";
+		}
+
+		// Form key handler
+		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if ( e.KeyCode == Keys.Escape )
+			{
+				toolCancel_Click(sender, e);
+			}
+			else if ( e.KeyCode == Keys.D0 )
+			{
+				toolLayerSelect.SelectedIndex = 0;
+			}
+			else if (e.KeyCode == Keys.D1)
+			{
+				toolLayerSelect.SelectedIndex = 1;
+			}
+			else if (e.KeyCode == Keys.D2)
+			{
+				toolLayerSelect.SelectedIndex = 2;
+			}
 		}
 	}
 }

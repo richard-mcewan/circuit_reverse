@@ -7,19 +7,14 @@ namespace CircuitReverse
 {
 	public partial class LoadImageForm : Form
 	{
+		// List for clip reference points
 		private List<Point> ClipPoints = new List<Point>();
 
 		public LoadImageForm()
 		{
 			InitializeComponent();
 
-			ToolTip tt = new ToolTip
-			{
-				AutoPopDelay = 5000,
-				InitialDelay = 1000,
-				ReshowDelay = 500,
-				ShowAlways = true
-			};
+			// Set tooltips
 			tt.SetToolTip(ImageFlipButton, "Mirror image horizontally");
 			tt.SetToolTip(ImageRotateLeftButton, "Rotate image 90 degrees left");
 			tt.SetToolTip(ImageRotateRightButton, "Rotate image 90 degrees right");
@@ -29,11 +24,14 @@ namespace CircuitReverse
 			tt.SetToolTip(ImageResetButton, "Remove projection points and reset image scale");
 		}
 
+		//Return layer image
 		public Image getImage()
 		{
 			return ImagePanel.img;
 		}
 
+		// Load image from file
+		// Called from Form control
 		private void LoadImageForm_Load(object sender, EventArgs e)
 		{
 			if (OpenImageDialog.ShowDialog() == DialogResult.OK)
@@ -47,6 +45,8 @@ namespace CircuitReverse
 			}
 		}
 
+		// Image preview panel Paint event
+		// Called from Form control
 		private void ImagePanel_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
@@ -62,6 +62,7 @@ namespace CircuitReverse
 			}
 		}
 
+		// Move panel crosshair
 		private void ImagePanel_MouseMove(object sender, MouseEventArgs e)
 		{
 			ImagePanel.Crosshair = e.Location;
@@ -77,6 +78,7 @@ namespace CircuitReverse
 			ImagePanel.ShowCrosshair = false;
 		}
 
+		// Place clip points, maximum 4
 		private void ImagePanel_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (ClipPoints.Count < 4)
@@ -96,6 +98,7 @@ namespace CircuitReverse
 			}
 		}
 
+		// Transform image
 		private void ImageFlipButton_Click(object sender, EventArgs e)
 		{
 			ImagePanel.img.RotateFlip(RotateFlipType.RotateNoneFlipX);
@@ -136,6 +139,7 @@ namespace CircuitReverse
 			ImageClipButton.Enabled = false;
 		}
 
+		// Resize evnet for responsive form
 		private void LoadImageForm_Resize(object sender, EventArgs e)
 		{
 			ImagePanel.Size = new Size(Size.Width - 40, Size.Height - 92);
@@ -150,6 +154,7 @@ namespace CircuitReverse
 			ImageOKButton.Location = new Point(Size.Width - 103, Size.Height - 72);
 		}
 
+		// Redraw image panel
 		private void RefreshTimer_Tick(object sender, EventArgs e)
 		{
 			ImagePanel.Invalidate();

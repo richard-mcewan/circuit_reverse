@@ -90,12 +90,14 @@ namespace CircuitReverse
 			return res;
 		}
 
+		// Create scaled image
 		public static Image ScaleImage(Image img, float scale)
 		{
 			var hs = (float)img.Size.Height / img.Size.Width / scale;
 			return new Bitmap(img, dtoi(img.Size.Width * hs), img.Size.Height);
 		}
 
+		// Compare points, from left to right first, then up to down
 		public static int ComparePoints(Point p1, Point p2)
 		{
 			if (p1.X > p2.X)
@@ -120,6 +122,7 @@ namespace CircuitReverse
 			}
 		}
 
+		// Double to int
 		public static int dtoi(double a)
 		{
 			return (int)Math.Floor(a);

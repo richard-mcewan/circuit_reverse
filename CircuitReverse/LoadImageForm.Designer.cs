@@ -40,6 +40,7 @@
 			this.ImageRotateLeftButton = new System.Windows.Forms.Button();
 			this.ImageFlipButton = new System.Windows.Forms.Button();
 			this.ImageScaleButton = new System.Windows.Forms.Button();
+			this.tt = new System.Windows.Forms.ToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.ImageScaleInput)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -150,6 +151,10 @@
 			this.ImageScaleButton.UseVisualStyleBackColor = true;
 			this.ImageScaleButton.Click += new System.EventHandler(this.ImageScaleButton_Click);
 			// 
+			// tt
+			// 
+			this.tt.ShowAlways = true;
+			// 
 			// LoadImageForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -188,5 +193,6 @@
 		private System.Windows.Forms.Timer RefreshTimer;
 		private System.Windows.Forms.NumericUpDown ImageScaleInput;
 		private System.Windows.Forms.Button ImageScaleButton;
+		private System.Windows.Forms.ToolTip tt;
 	}
 }

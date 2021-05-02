@@ -113,5 +113,11 @@
   <ItemGroup>
     <None Include="Resources\ImageMap_16x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AssociationRelationship_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Pin_16x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
