@@ -71,11 +71,6 @@
 			this.ImagePanel.Name = "ImagePanel";
 			this.ImagePanel.Size = new System.Drawing.Size(350, 350);
 			this.ImagePanel.TabIndex = 0;
-			this.ImagePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ImagePanel_Paint);
-			this.ImagePanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseClick);
-			this.ImagePanel.MouseEnter += new System.EventHandler(this.ImagePanel_MouseEnter);
-			this.ImagePanel.MouseLeave += new System.EventHandler(this.ImagePanel_MouseLeave);
-			this.ImagePanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseMove);
 			// 
 			// ImageScaleInput
 			// 

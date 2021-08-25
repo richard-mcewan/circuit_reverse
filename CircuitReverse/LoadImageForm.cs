@@ -22,6 +22,10 @@ namespace CircuitReverse
 			tt.SetToolTip(ImageScaleButton, "Set image scale (removes projection points)");
 			tt.SetToolTip(ImageClipButton, "Clip image projection");
 			tt.SetToolTip(ImageResetButton, "Remove projection points and reset image scale");
+
+			// Set panel event handlers
+			ImagePanel.Paint += new PaintEventHandler(ImagePanel_Paint);
+			ImagePanel.MouseClick += new MouseEventHandler(ImagePanel_MouseClick);
 		}
 
 		//Return layer image
@@ -50,32 +54,11 @@ namespace CircuitReverse
 		private void ImagePanel_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			if (ImagePanel.DrawPanelImage(g, (float)ImageScaleInput.Value))
+			foreach (var p in ClipPoints)
 			{
-				foreach (var p in ClipPoints)
-				{
-					var pp = ImagePanel.ImageToPanel(p);
-					g.FillEllipse(Brushes.Red, pp.X - 4, pp.Y - 4, 8, 8);
-				}
-
-				ImagePanel.DrawPanelCrosshair(g);
+				var pp = ImagePanel.ImageToPanel(p);
+				g.FillEllipse(Brushes.Red, pp.X - 4, pp.Y - 4, 8, 8);
 			}
-		}
-
-		// Move panel crosshair
-		private void ImagePanel_MouseMove(object sender, MouseEventArgs e)
-		{
-			ImagePanel.Crosshair = e.Location;
-		}
-
-		private void ImagePanel_MouseEnter(object sender, EventArgs e)
-		{
-			ImagePanel.ShowCrosshair = true;
-		}
-
-		private void ImagePanel_MouseLeave(object sender, EventArgs e)
-		{
-			ImagePanel.ShowCrosshair = false;
 		}
 
 		// Place clip points, maximum 4

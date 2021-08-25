@@ -7,27 +7,18 @@ using System.IO.Compression;
 
 namespace CircuitReverse
 {
-	public enum ActiveTool
-	{
-		TOOL_NONE,
-		TOOL_LINE,
-		TOOL_PIN
-	}
-
 	public partial class MainForm : Form
 	{
-		private Project project = new Project();
-
-		private bool NetActive = false;
-		private int ActiveLine = 0;
-
 		public MainForm()
 		{
 			InitializeComponent();
-			
-			// set panel layer numbers
-			TopPanel.LayerNumber = 0;
-			BottomPanel.LayerNumber = 1;
+
+			// set panel layer values
+			TopPanel.Layer = LayerEnum.TOP;
+			TopPanel.project = this;
+
+			BottomPanel.Layer = LayerEnum.BOTTOM;
+			BottomPanel.project = this;
 		}
 
 		// Resize event for responsive form
@@ -65,108 +56,11 @@ namespace CircuitReverse
 			}
 		}
 
-		// Panel Paint events
-		// Called from Form Control
-		private void TopPanel_Paint(object sender, PaintEventArgs e)
-		{
-			var g = e.Graphics;
-			if (TopPanel.DrawPanelImage(g))
-			{
-				DrawLayer(sender, g);
-			}
-			TopPanel.DrawPanelCrosshair(g);
-		}
-
-		private void BottomPanel_Paint(object sender, PaintEventArgs e)
-		{
-			var g = e.Graphics;
-			if (BottomPanel.DrawPanelImage(g))
-			{
-				DrawLayer(sender, g);
-			}
-			BottomPanel.DrawPanelCrosshair(g);
-		}
-
-		// Draw panel layers
-		// Called by Paint events
-		private void DrawLayer(object sender, Graphics g)
-		{
-			var layer = sender as BufferedPanel;
-
-			// Draw netlines
-			foreach (var line in project.Lines)
-			{
-				var p = new Pen(line.LineColor, 4);
-				var linepoints = line.LinePoints[layer.LayerNumber];
-				for (int i = 0; i < linepoints.Count - 1; i++)
-				{
-					g.DrawLine(p, layer.ImageToPanel(linepoints[i]), layer.ImageToPanel(linepoints[i + 1]));
-				}
-			}
-
-			// Draw end of active net line
-			if (NetActive)
-			{
-				var line = project.Lines[ActiveLine];
-				var p = new Pen(line.LineColor, 4);
-				var linepoints = line.LinePoints[layer.LayerNumber];
-				g.DrawLine(p, layer.ImageToPanel(linepoints[linepoints.Count - 1]), layer.Crosshair);
-			}
-		}
-
 		// Redraw panel
 		private void RefreshTimer_Tick(object sender, EventArgs e)
 		{
 			TopPanel.Invalidate();
 			BottomPanel.Invalidate();
-		}
-
-		// Set crosshair
-		private void TopBottomPanel_MouseMove(object sender, MouseEventArgs e)
-		{
-			TopPanel.Crosshair = e.Location;
-			BottomPanel.Crosshair = e.Location;
-		}
-
-		private void TopBottomPanel_MouseEnter(object sender, EventArgs e)
-		{
-			TopPanel.ShowCrosshair = true;
-			BottomPanel.ShowCrosshair = true;
-		}
-
-		private void TopBottomPanel_MouseLeave(object sender, EventArgs e)
-		{
-			TopPanel.ShowCrosshair = false;
-			BottomPanel.ShowCrosshair = false;
-		}
-
-		// Panel mouse click event, active tool action
-		private void TopBottomPanel_MouseClick(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left)
-			{
-				if (!NetActive) {
-					NetActive = true;
-					project.Lines.Add(new NetLine());
-					ActiveLine = project.Lines.Count - 1;
-				}
-				project.Lines[ActiveLine].LinePoints[0].Add(TopPanel.CrosshairToImage());
-				project.Lines[ActiveLine].LinePoints[1].Add(BottomPanel.CrosshairToImage());
-			}
-			else if (e.Button == MouseButtons.Right)
-			{
-				NetActive = false;
-				if ( project.Lines[ActiveLine].LinePoints[0].Count < 2 && project.Lines[ActiveLine].LinePoints[1].Count < 2)
-				{
-					project.Lines.RemoveAt(ActiveLine);
-				}
-			}
-		}
-
-		// Cancel active tool
-		private void toolCancel_Click(object sender, EventArgs e)
-		{
-
 		}
 
 		// Save project
@@ -182,12 +76,12 @@ namespace CircuitReverse
 
 		private void SaveProject(bool saveas)
 		{
-			if (project.ProjectFilePath == "" || saveas)
+			if (ProjectFilePath == "" || saveas)
 			{
 				if (ProjectSaveDialog.ShowDialog() == DialogResult.OK)
 				{
-					project.ProjectFilePath = ProjectSaveDialog.FileName;
-					Text = "CircuitReverse - " + project.ProjectFilePath;
+					ProjectFilePath = ProjectSaveDialog.FileName;
+					Text = "CircuitReverse - " + ProjectFilePath;
 				}
 				else
 				{
@@ -195,7 +89,7 @@ namespace CircuitReverse
 				}
 			}
 
-			using (var zip = new ZipArchive(new FileStream(project.ProjectFilePath, FileMode.Create), ZipArchiveMode.Create))
+			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Create), ZipArchiveMode.Create))
 			{
 				if (!(TopPanel.img is null))
 				{
@@ -223,15 +117,15 @@ namespace CircuitReverse
 		{
 			if (ProjectOpenDialog.ShowDialog() == DialogResult.OK)
 			{
-				project.ProjectFilePath = ProjectOpenDialog.FileName;
-				Text = "CircuitReverse - " + project.ProjectFilePath;
+				ProjectFilePath = ProjectOpenDialog.FileName;
+				Text = "CircuitReverse - " + ProjectFilePath;
 			}
 			else
 			{
 				return;
 			}
 
-			using (var zip = new ZipArchive(new FileStream(project.ProjectFilePath, FileMode.Open), ZipArchiveMode.Read))
+			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Open), ZipArchiveMode.Read))
 			{
 				var top = zip.GetEntry("top.png");
 				if ( !(top is null))
@@ -259,7 +153,7 @@ namespace CircuitReverse
 		{
 			if ( e.KeyCode == Keys.Escape )
 			{
-				toolCancel_Click(sender, e);
+				CancelTool(sender, e);
 			}
 			else if ( e.KeyCode == Keys.D0 )
 			{

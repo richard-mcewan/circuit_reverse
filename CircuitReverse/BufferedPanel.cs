@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CircuitReverse
@@ -7,24 +8,81 @@ namespace CircuitReverse
 	// Used on MainForm and LoadImageForm
 	public class BufferedPanel : Panel
 	{
+		// Reference to MainForm
+		public MainForm project = null;
+
 		// PCB image to show
-		public Image img;
-		public double ImageScale;
+		public Image img = null;
+		public double ImageScale = 1.0;
 		public float ImageWidthScale = 1; // for load image scaling preview
 
-		// Crosshair location
-		public Point Crosshair;
-		public bool ShowCrosshair = false;
-
-		// Layer ID
-		// 0 - top layer
-		// 1 - bottom layer
-		public int LayerNumber = -1;
+		// Layer
+		public LayerEnum Layer = LayerEnum.NONE;
 
 		public BufferedPanel()
 		{
 			DoubleBuffered = true;
 			ResizeRedraw = true;
+
+			// set panel event handlers
+			Paint += new PaintEventHandler(PaintEvent);
+			MouseMove += new MouseEventHandler(MouseMoveEvent);
+			MouseEnter += new EventHandler(MouseEnterEvent);
+			MouseLeave += new EventHandler(MouseLeaveEvent);
+			MouseClick += new MouseEventHandler(MouseClickEvent);
+		}
+
+		// Paint event handler
+		private void PaintEvent(object s, PaintEventArgs e)
+		{
+			if (project is null)
+			{
+				// mitigate design-time exception
+				return;
+			}
+
+			var g = e.Graphics;
+			DrawPanelImage(g);
+			project.ActiveTool?.PaintHandler(Layer, ImageToPanel, g);
+
+			foreach (var obj in project.ProjectObjects)
+			{
+				obj.DrawObject(Layer, ImageToPanel, g);
+			}
+
+			DrawPanelCrosshair(g);
+		}
+
+		// Mouse movement event handlers (set crosshair)
+		public void MouseMoveEvent(object s, MouseEventArgs e)
+		{
+			if (!(img is null))
+			{
+				project.Crosshair = PanelToImage(e.Location);
+			}
+			project.ActiveTool?.MoveHandler(project.Crosshair);
+		}
+
+		public void MouseEnterEvent(object s, EventArgs e)
+		{
+			project.ShowCrosshair = true;
+		}
+
+		public void MouseLeaveEvent(object s, EventArgs e)
+		{
+			project.ShowCrosshair = false;
+		}
+
+		// Mouse click event handler
+		private void MouseClickEvent(object s, MouseEventArgs e)
+		{
+			if (!(project.ActiveTool is null))
+			{
+				if (project.ActiveTool.ClickHandler(e))
+				{
+					project.EndTool();
+				}
+			}
 		}
 
 		// Draw the image on the panel
@@ -52,6 +110,7 @@ namespace CircuitReverse
 
 			if (scale_x > scale_y)
 			{
+				// center horizontally
 				var w = imgw * scale_y;
 				var h = imgh * scale_y;
 				var fw = Size.Width;
@@ -60,6 +119,7 @@ namespace CircuitReverse
 			}
 			else
 			{
+				// center vertically
 				var w = imgw * scale_x;
 				var h = imgh * scale_x;
 				var fh = Size.Height;
@@ -74,11 +134,12 @@ namespace CircuitReverse
 		// Called from Paint event
 		public void DrawPanelCrosshair(Graphics g)
 		{
-			if (ShowCrosshair)
+			if (project.ShowCrosshair && !(img is null))
 			{
 				Pen pn = new Pen(Color.Black, 1);
-				g.DrawLine(pn, Crosshair.X, 0, Crosshair.X, Size.Height);
-				g.DrawLine(pn, 0, Crosshair.Y, Size.Width, Crosshair.Y);
+				Point p = ImageToPanel(project.Crosshair);
+				g.DrawLine(pn, p.X, 0, p.X, Size.Height);
+				g.DrawLine(pn, 0, p.Y, Size.Width, p.Y);
 			}
 		}
 
@@ -96,12 +157,6 @@ namespace CircuitReverse
 			var x = (p.X - img.Size.Width / 2.0) * ImageScale + Size.Width / 2.0;
 			var y = (p.Y - img.Size.Height / 2.0) * ImageScale + Size.Height / 2.0;
 			return new Point(ImageClipper.dtoi(x), ImageClipper.dtoi(y));
-		}
-
-		// Get image coordinates from crosshair coordinates
-		public Point CrosshairToImage()
-		{
-			return PanelToImage(Crosshair);
 		}
 	}
 }

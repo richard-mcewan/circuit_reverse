@@ -33,8 +33,6 @@
 			this.statusStripMain = new System.Windows.Forms.StatusStrip();
 			this.StatusLabelDefault = new System.Windows.Forms.ToolStripStatusLabel();
 			this.ProjectSaveDialog = new System.Windows.Forms.SaveFileDialog();
-			this.BottomPanel = new CircuitReverse.BufferedPanel();
-			this.TopPanel = new CircuitReverse.BufferedPanel();
 			this.ProjectOpenDialog = new System.Windows.Forms.OpenFileDialog();
 			this.objectPropertyGrid = new System.Windows.Forms.PropertyGrid();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,14 +42,15 @@
 			this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveProjectAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStripMain = new System.Windows.Forms.MenuStrip();
 			this.toolStripMain = new System.Windows.Forms.ToolStrip();
-			this.toolNetLine = new System.Windows.Forms.ToolStripButton();
-			this.toolPin = new System.Windows.Forms.ToolStripButton();
 			this.toolCancel = new System.Windows.Forms.ToolStripButton();
+			this.toolWire = new System.Windows.Forms.ToolStripButton();
+			this.toolPin = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolLayerSelect = new System.Windows.Forms.ToolStripComboBox();
+			this.BottomPanel = new CircuitReverse.BufferedPanel();
+			this.TopPanel = new CircuitReverse.BufferedPanel();
 			this.statusStripMain.SuspendLayout();
 			this.menuStripMain.SuspendLayout();
 			this.toolStripMain.SuspendLayout();
@@ -82,32 +81,6 @@
 			this.ProjectSaveDialog.FileName = "project.zip";
 			this.ProjectSaveDialog.Filter = "ZIP file|*.zip";
 			// 
-			// BottomPanel
-			// 
-			this.BottomPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.BottomPanel.Location = new System.Drawing.Point(300, 52);
-			this.BottomPanel.Name = "BottomPanel";
-			this.BottomPanel.Size = new System.Drawing.Size(282, 384);
-			this.BottomPanel.TabIndex = 2;
-			this.BottomPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomPanel_Paint);
-			this.BottomPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseClick);
-			this.BottomPanel.MouseEnter += new System.EventHandler(this.TopBottomPanel_MouseEnter);
-			this.BottomPanel.MouseLeave += new System.EventHandler(this.TopBottomPanel_MouseLeave);
-			this.BottomPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseMove);
-			// 
-			// TopPanel
-			// 
-			this.TopPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.TopPanel.Location = new System.Drawing.Point(12, 52);
-			this.TopPanel.Name = "TopPanel";
-			this.TopPanel.Size = new System.Drawing.Size(282, 384);
-			this.TopPanel.TabIndex = 1;
-			this.TopPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TopPanel_Paint);
-			this.TopPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseClick);
-			this.TopPanel.MouseEnter += new System.EventHandler(this.TopBottomPanel_MouseEnter);
-			this.TopPanel.MouseLeave += new System.EventHandler(this.TopBottomPanel_MouseLeave);
-			this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopBottomPanel_MouseMove);
-			// 
 			// ProjectOpenDialog
 			// 
 			this.ProjectOpenDialog.Filter = "ZIP file|*.zip";
@@ -135,54 +108,48 @@
 			// loadTopImageToolStripMenuItem
 			// 
 			this.loadTopImageToolStripMenuItem.Name = "loadTopImageToolStripMenuItem";
-			this.loadTopImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.loadTopImageToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.loadTopImageToolStripMenuItem.Text = "Load Top Image";
 			this.loadTopImageToolStripMenuItem.Click += new System.EventHandler(this.LoadTopMenu_Click);
 			// 
 			// loadBottomImageToolStripMenuItem
 			// 
 			this.loadBottomImageToolStripMenuItem.Name = "loadBottomImageToolStripMenuItem";
-			this.loadBottomImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.loadBottomImageToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.loadBottomImageToolStripMenuItem.Text = "Load Bottom Image";
 			this.loadBottomImageToolStripMenuItem.Click += new System.EventHandler(this.LoadBottomMenu_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(176, 6);
 			// 
 			// saveProjectToolStripMenuItem
 			// 
 			this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
 			this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.saveProjectToolStripMenuItem.Text = "Save project";
 			this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectMenu_Click);
 			// 
 			// saveProjectAsToolStripMenuItem
 			// 
 			this.saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
-			this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.saveProjectAsToolStripMenuItem.Text = "Save project as...";
 			this.saveProjectAsToolStripMenuItem.Click += new System.EventHandler(this.saveProjectAsMenu_Click);
 			// 
 			// openProjectToolStripMenuItem
 			// 
 			this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-			this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.openProjectToolStripMenuItem.Text = "Open project";
 			this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectMenu_Click);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(12, 20);
 			// 
 			// menuStripMain
 			// 
 			this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.fileToolStripMenuItem});
 			this.menuStripMain.Location = new System.Drawing.Point(0, 0);
 			this.menuStripMain.Name = "menuStripMain";
 			this.menuStripMain.Size = new System.Drawing.Size(884, 24);
@@ -193,7 +160,7 @@
 			// 
 			this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolCancel,
-            this.toolNetLine,
+            this.toolWire,
             this.toolPin,
             this.toolStripSeparator2,
             this.toolLayerSelect});
@@ -203,16 +170,27 @@
 			this.toolStripMain.TabIndex = 7;
 			this.toolStripMain.Text = "toolStrip1";
 			// 
-			// toolNetLine
+			// toolCancel
 			// 
-			this.toolNetLine.CheckOnClick = true;
-			this.toolNetLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolNetLine.Image = global::CircuitReverse.Properties.Resources.AssociationRelationship_16x;
-			this.toolNetLine.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolNetLine.Name = "toolNetLine";
-			this.toolNetLine.Size = new System.Drawing.Size(23, 22);
-			this.toolNetLine.Text = "toolStripButton1";
-			this.toolNetLine.ToolTipText = "Draw line";
+			this.toolCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolCancel.Image = global::CircuitReverse.Properties.Resources.Cancel_16x;
+			this.toolCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolCancel.Name = "toolCancel";
+			this.toolCancel.Size = new System.Drawing.Size(23, 22);
+			this.toolCancel.ToolTipText = "Cancel action (Esc)";
+			this.toolCancel.Click += new System.EventHandler(this.CancelTool);
+			// 
+			// toolWire
+			// 
+			this.toolWire.CheckOnClick = true;
+			this.toolWire.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolWire.Image = global::CircuitReverse.Properties.Resources.AssociationRelationship_16x;
+			this.toolWire.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolWire.Name = "toolWire";
+			this.toolWire.Size = new System.Drawing.Size(23, 22);
+			this.toolWire.Text = "toolStripButton1";
+			this.toolWire.ToolTipText = "Draw line";
+			this.toolWire.Click += new System.EventHandler(this.BeginWire);
 			// 
 			// toolPin
 			// 
@@ -224,16 +202,7 @@
 			this.toolPin.Size = new System.Drawing.Size(23, 22);
 			this.toolPin.Text = "toolStripButton2";
 			this.toolPin.ToolTipText = "Draw pin";
-			// 
-			// toolCancel
-			// 
-			this.toolCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolCancel.Image = global::CircuitReverse.Properties.Resources.Cancel_16x;
-			this.toolCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolCancel.Name = "toolCancel";
-			this.toolCancel.Size = new System.Drawing.Size(23, 22);
-			this.toolCancel.ToolTipText = "Cancel action (Esc)";
-			this.toolCancel.Click += new System.EventHandler(this.toolCancel_Click);
+			this.toolPin.Click += new System.EventHandler(this.BeginPin);
 			// 
 			// toolStripSeparator2
 			// 
@@ -250,6 +219,22 @@
 			this.toolLayerSelect.Size = new System.Drawing.Size(121, 25);
 			this.toolLayerSelect.Text = "Both layers (2)";
 			this.toolLayerSelect.ToolTipText = "Select layer to draw on";
+			// 
+			// BottomPanel
+			// 
+			this.BottomPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.BottomPanel.Location = new System.Drawing.Point(300, 52);
+			this.BottomPanel.Name = "BottomPanel";
+			this.BottomPanel.Size = new System.Drawing.Size(282, 384);
+			this.BottomPanel.TabIndex = 2;
+			// 
+			// TopPanel
+			// 
+			this.TopPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.TopPanel.Location = new System.Drawing.Point(12, 52);
+			this.TopPanel.Name = "TopPanel";
+			this.TopPanel.Size = new System.Drawing.Size(282, 384);
+			this.TopPanel.TabIndex = 1;
 			// 
 			// MainForm
 			// 
@@ -296,10 +281,9 @@
 		private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveProjectAsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.MenuStrip menuStripMain;
 		private System.Windows.Forms.ToolStrip toolStripMain;
-		private System.Windows.Forms.ToolStripButton toolNetLine;
+		private System.Windows.Forms.ToolStripButton toolWire;
 		private System.Windows.Forms.ToolStripButton toolPin;
 		private System.Windows.Forms.ToolStripButton toolCancel;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
