@@ -16,7 +16,7 @@ namespace CircuitReverse
 		public double ImageScale = 1.0;
 		public float ImageWidthScale = 1; // for load image scaling preview
 
-		// Layer
+		// Which layer shown by this panel
 		public LayerEnum Layer = LayerEnum.NONE;
 
 		public BufferedPanel()
@@ -32,7 +32,6 @@ namespace CircuitReverse
 			MouseClick += new MouseEventHandler(MouseClickEvent);
 		}
 
-		// Paint event handler
 		private void PaintEvent(object s, PaintEventArgs e)
 		{
 			if (project is null)
@@ -45,7 +44,7 @@ namespace CircuitReverse
 			DrawPanelImage(g);
 			project.ActiveTool?.PaintHandler(Layer, ImageToPanel, g);
 
-			foreach (var obj in project.ProjectObjects)
+			foreach (AbstractObject obj in project.objectList.Items)
 			{
 				obj.DrawObject(Layer, ImageToPanel, g);
 			}
@@ -53,7 +52,6 @@ namespace CircuitReverse
 			DrawPanelCrosshair(g);
 		}
 
-		// Mouse movement event handlers (set crosshair)
 		public void MouseMoveEvent(object s, MouseEventArgs e)
 		{
 			if (!(img is null))
@@ -73,20 +71,26 @@ namespace CircuitReverse
 			project.ShowCrosshair = false;
 		}
 
-		// Mouse click event handler
 		private void MouseClickEvent(object s, MouseEventArgs e)
 		{
 			if (!(project.ActiveTool is null))
 			{
-				if (project.ActiveTool.ClickHandler(e))
+				var action = project.ActiveTool.ClickHandler(e);
+
+				// if the tool is resetting or exiting, save the object
+				if (action == ToolAction.RESET || action == ToolAction.EXIT)
 				{
-					project.EndTool();
+					project.objectList.Items.Add(project.ActiveTool.ResetAndGetObject());
+				}
+
+				// if the tool is aborting or exiting, delete the object
+				if ( action == ToolAction.ABORT || action == ToolAction.EXIT )
+				{
+					project.ActiveTool = null;
 				}
 			}
 		}
 
-		// Draw the image on the panel
-		// Called from the Paint event
 		public bool DrawPanelImage(Graphics g, float whscale = 0)
 		{
 			if ( img is null )
@@ -143,7 +147,7 @@ namespace CircuitReverse
 			}
 		}
 
-		// Get image corrdinates from panel coordinates
+		// Get image corrdinates from panel coordinates (transform)
 		public Point PanelToImage(Point p)
 		{
 			var x = (p.X - Size.Width / 2.0) / ImageScale + img.Size.Width / 2.0;
@@ -151,7 +155,7 @@ namespace CircuitReverse
 			return new Point(ImageClipper.dtoi(x), ImageClipper.dtoi(y));
 		}
 
-		// Get panel coordinates from image coordinates
+		// Get panel coordinates from image coordinates (transform)
 		public Point ImageToPanel(Point p)
 		{
 			var x = (p.X - img.Size.Width / 2.0) * ImageScale + Size.Width / 2.0;

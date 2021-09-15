@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CircuitReverse
 {
-	public partial class MainForm : Form
+	public partial class MainForm
 	{
 		// Absolute path for project file
 		public string ProjectFilePath = "";
@@ -17,10 +17,7 @@ namespace CircuitReverse
 		// Active command
 		public AbstractTool ActiveTool = null;
 
-		// Project objects
-		public List<AbstractObject> ProjectObjects = new List<AbstractObject>();
-
-		// Begin tools
+		// Tool functions
 		public void BeginWire(object s, EventArgs e)
 		{
 			CancelTool();
@@ -32,21 +29,14 @@ namespace CircuitReverse
 		{
 			CancelTool();
 			toolPin.Checked = true;
-			// TODO set active tool
+			ActiveTool = new PinTool(toolLayerSelect.SelectedIndex);
 		}
 
-		// End tool
 		public void CancelTool(object s = null, EventArgs e = null)
 		{
 			ActiveTool = null;
 			toolWire.Checked = false;
 			toolPin.Checked = false;
-		}
-
-		public void EndTool()
-		{
-			ProjectObjects.Add(ActiveTool.EndTool());
-			CancelTool();
 		}
 	}
 }

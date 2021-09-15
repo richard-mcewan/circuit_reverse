@@ -13,7 +13,6 @@ namespace CircuitReverse
 		{
 			InitializeComponent();
 
-			// set panel layer values
 			TopPanel.Layer = LayerEnum.TOP;
 			TopPanel.project = this;
 
@@ -21,16 +20,23 @@ namespace CircuitReverse
 			BottomPanel.project = this;
 		}
 
-		// Resize event for responsive form
+		// Resize event to make form responsive
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
+			// Resize TopPanel
 			TopPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
 
-			BottomPanel.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
-			BottomPanel.Location = new Point((Size.Width - 52) / 3 + 18, BottomPanel.Location.Y);
+			// Align BottomPanel to TopPanel
+			BottomPanel.Size = new Size(TopPanel.Size.Width, TopPanel.Size.Height);
+			BottomPanel.Location = new Point(TopPanel.Location.X + TopPanel.Size.Width + 18, BottomPanel.Location.Y);
 
-			objectPropertyGrid.Size = new Size((Size.Width - 52) / 3, Size.Height - 116);
-			objectPropertyGrid.Location = new Point((Size.Width - 52) * 2 / 3 + 24, objectPropertyGrid.Location.Y);
+			// Align objectPropertyGrid to BottomPanel
+			objectPropertyGrid.Size = new Size(TopPanel.Size.Width, (TopPanel.Size.Height - 6) / 2);
+			objectPropertyGrid.Location = new Point(BottomPanel.Location.X + BottomPanel.Size.Width + 6, objectPropertyGrid.Location.Y);
+
+			// Align objectList to objectPropertyGrid
+			objectList.Size = objectPropertyGrid.Size;
+			objectList.Location = new Point(objectPropertyGrid.Location.X, objectPropertyGrid.Location.Y + objectPropertyGrid.Size.Height + 6);
 		}
 
 		// Load images with LoadImageForm
@@ -56,14 +62,13 @@ namespace CircuitReverse
 			}
 		}
 
-		// Redraw panel
+		// Invalidate panels in fix intervals instead of on every change to unload CPU
 		private void RefreshTimer_Tick(object sender, EventArgs e)
 		{
 			TopPanel.Invalidate();
 			BottomPanel.Invalidate();
 		}
 
-		// Save project
 		private void saveProjectMenu_Click(object sender, EventArgs e)
 		{
 			SaveProject(false);
@@ -72,6 +77,18 @@ namespace CircuitReverse
 		private void saveProjectAsMenu_Click(object sender, EventArgs e)
 		{
 			SaveProject(true);
+		}
+
+		private void SavePanelImg(BufferedPanel panel, ZipArchive archive, string entryName)
+		{
+			if (!(panel.img is null))
+			{
+				var entry = archive.CreateEntry(entryName);
+				using (var s = entry.Open())
+				{
+					panel.img.Save(s, ImageFormat.Png);
+				}
+			}
 		}
 
 		private void SaveProject(bool saveas)
@@ -91,28 +108,24 @@ namespace CircuitReverse
 
 			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Create), ZipArchiveMode.Create))
 			{
-				if (!(TopPanel.img is null))
-				{
-					var top = zip.CreateEntry("top.png");
-					using (var s = top.Open())
-					{
-						TopPanel.img.Save(s, ImageFormat.Png);
-					}
-				}
-
-				if (!(BottomPanel.img is null))
-				{
-					var bot = zip.CreateEntry("bottom.png");
-					using (var s = bot.Open())
-					{
-						BottomPanel.img.Save(s, ImageFormat.Png);
-					}
-				}
+				SavePanelImg(TopPanel, zip, "top.png");
+				SavePanelImg(BottomPanel, zip, "bottom.png");
 			}
 			statusStripMain.Items["statusLabelDefault"].Text = "Project saved";
 		}
 
-		// Open project
+		private void OpenPanelImg(BufferedPanel panel, ZipArchive archive, string entryName)
+		{
+			var entry = archive.GetEntry(entryName);
+			if (!(entry is null))
+			{
+				using (var s = entry.Open())
+				{
+					panel.img = new Bitmap(s);
+				}
+			}
+		}
+
 		private void openProjectMenu_Click(object sender, EventArgs e)
 		{
 			if (ProjectOpenDialog.ShowDialog() == DialogResult.OK)
@@ -127,28 +140,14 @@ namespace CircuitReverse
 
 			using (var zip = new ZipArchive(new FileStream(ProjectFilePath, FileMode.Open), ZipArchiveMode.Read))
 			{
-				var top = zip.GetEntry("top.png");
-				if ( !(top is null))
-				{
-					using ( var s = top.Open())
-					{
-						TopPanel.img = new Bitmap(s);
-					}
-				}
-
-				var bot = zip.GetEntry("bottom.png");
-				if (!(bot is null))
-				{
-					using (var s = bot.Open())
-					{
-						BottomPanel.img = new Bitmap(s);
-					}
-				}
+				OpenPanelImg(TopPanel, zip, "top.png");
+				OpenPanelImg(BottomPanel, zip, "bottom.png");
 			}
 			statusStripMain.Items["statusLabelDefault"].Text = "Project loaded";
 		}
 
-		// Form key handler
+		// Handle form key presses
+		// TODO forward to active tool
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if ( e.KeyCode == Keys.Escape )

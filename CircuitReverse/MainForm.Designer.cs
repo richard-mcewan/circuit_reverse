@@ -49,6 +49,7 @@
 			this.toolPin = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolLayerSelect = new System.Windows.Forms.ToolStripComboBox();
+			this.objectList = new System.Windows.Forms.ListBox();
 			this.BottomPanel = new CircuitReverse.BufferedPanel();
 			this.TopPanel = new CircuitReverse.BufferedPanel();
 			this.statusStripMain.SuspendLayout();
@@ -89,7 +90,7 @@
 			// 
 			this.objectPropertyGrid.Location = new System.Drawing.Point(588, 52);
 			this.objectPropertyGrid.Name = "objectPropertyGrid";
-			this.objectPropertyGrid.Size = new System.Drawing.Size(284, 384);
+			this.objectPropertyGrid.Size = new System.Drawing.Size(284, 189);
 			this.objectPropertyGrid.TabIndex = 6;
 			// 
 			// fileToolStripMenuItem
@@ -220,6 +221,15 @@
 			this.toolLayerSelect.Text = "Both layers (2)";
 			this.toolLayerSelect.ToolTipText = "Select layer to draw on";
 			// 
+			// objectList
+			// 
+			this.objectList.FormattingEnabled = true;
+			this.objectList.Location = new System.Drawing.Point(588, 247);
+			this.objectList.Name = "objectList";
+			this.objectList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.objectList.Size = new System.Drawing.Size(284, 186);
+			this.objectList.TabIndex = 8;
+			// 
 			// BottomPanel
 			// 
 			this.BottomPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -241,6 +251,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(884, 461);
+			this.Controls.Add(this.objectList);
 			this.Controls.Add(this.toolStripMain);
 			this.Controls.Add(this.objectPropertyGrid);
 			this.Controls.Add(this.statusStripMain);
@@ -288,6 +299,7 @@
 		private System.Windows.Forms.ToolStripButton toolCancel;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripComboBox toolLayerSelect;
+		public System.Windows.Forms.ListBox objectList;
 	}
 }
 
