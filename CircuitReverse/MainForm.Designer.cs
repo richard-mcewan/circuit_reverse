@@ -190,7 +190,7 @@
 			this.toolWire.Name = "toolWire";
 			this.toolWire.Size = new System.Drawing.Size(23, 22);
 			this.toolWire.Text = "toolStripButton1";
-			this.toolWire.ToolTipText = "Draw line";
+			this.toolWire.ToolTipText = "Draw line (W)";
 			this.toolWire.Click += new System.EventHandler(this.BeginWire);
 			// 
 			// toolPin
@@ -202,7 +202,7 @@
 			this.toolPin.Name = "toolPin";
 			this.toolPin.Size = new System.Drawing.Size(23, 22);
 			this.toolPin.Text = "toolStripButton2";
-			this.toolPin.ToolTipText = "Draw pin";
+			this.toolPin.ToolTipText = "Draw pin (P)";
 			this.toolPin.Click += new System.EventHandler(this.BeginPin);
 			// 
 			// toolStripSeparator2
@@ -237,6 +237,11 @@
 			this.BottomPanel.Name = "BottomPanel";
 			this.BottomPanel.Size = new System.Drawing.Size(282, 384);
 			this.BottomPanel.TabIndex = 2;
+			this.BottomPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ImgPanelPaint);
+			this.BottomPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ImgPanelMouseClick);
+			this.BottomPanel.MouseEnter += new System.EventHandler(this.ImgPanelMouseEnter);
+			this.BottomPanel.MouseLeave += new System.EventHandler(this.ImgPanelMouseLeave);
+			this.BottomPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImgPanelMouseMove);
 			// 
 			// TopPanel
 			// 
@@ -245,6 +250,11 @@
 			this.TopPanel.Name = "TopPanel";
 			this.TopPanel.Size = new System.Drawing.Size(282, 384);
 			this.TopPanel.TabIndex = 1;
+			this.TopPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.ImgPanelPaint);
+			this.TopPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ImgPanelMouseClick);
+			this.TopPanel.MouseEnter += new System.EventHandler(this.ImgPanelMouseEnter);
+			this.TopPanel.MouseLeave += new System.EventHandler(this.ImgPanelMouseLeave);
+			this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImgPanelMouseMove);
 			// 
 			// MainForm
 			// 

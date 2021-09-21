@@ -14,10 +14,7 @@ namespace CircuitReverse
 			InitializeComponent();
 
 			TopPanel.Layer = LayerEnum.TOP;
-			TopPanel.project = this;
-
 			BottomPanel.Layer = LayerEnum.BOTTOM;
-			BottomPanel.project = this;
 		}
 
 		// Resize event to make form responsive
@@ -39,7 +36,7 @@ namespace CircuitReverse
 			objectList.Location = new Point(objectPropertyGrid.Location.X, objectPropertyGrid.Location.Y + objectPropertyGrid.Size.Height + 6);
 		}
 
-		// Load images with LoadImageForm
+		// Load images by using LoadImageForm as a dialog
 		private void LoadTopMenu_Click(object sender, EventArgs e)
 		{
 			using (var f = new LoadImageForm())
@@ -146,15 +143,14 @@ namespace CircuitReverse
 			statusStripMain.Items["statusLabelDefault"].Text = "Project loaded";
 		}
 
-		// Handle form key presses
-		// TODO forward to active tool
+		// Handle form key presses and mouse events, and forward them to the respective objects
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if ( e.KeyCode == Keys.Escape )
+			if (e.KeyCode == Keys.Escape)
 			{
 				CancelTool(sender, e);
 			}
-			else if ( e.KeyCode == Keys.D0 )
+			else if (e.KeyCode == Keys.D0)
 			{
 				toolLayerSelect.SelectedIndex = 0;
 			}
@@ -166,6 +162,86 @@ namespace CircuitReverse
 			{
 				toolLayerSelect.SelectedIndex = 2;
 			}
+			else if (e.KeyCode == Keys.W)
+			{
+				BeginWire(sender, e);
+			}
+			else if (e.KeyCode == Keys.P)
+			{
+				BeginPin(sender, e);
+			}
+			else
+			{
+				ActiveTool?.KeyHandler(e.KeyCode);
+			}
+		}
+
+		private void ImgPanelPaint(object sender, PaintEventArgs e)
+		{
+			var p = sender as BufferedPanel;
+			var g = e.Graphics;
+			p.DrawPanelImage(g);
+
+			ActiveTool?.PaintHandler(p.Layer, p.ImageToPanel, g);
+
+			foreach (AbstractObject obj in objectList.Items)
+			{
+				obj.DrawObject(p.Layer, p.ImageToPanel, g);
+			}
+
+			p.DrawPanelCrosshair(g, crosshair);
+		}
+
+		private void ImgPanelMouseMove(object sender, MouseEventArgs e)
+		{
+			var p = sender as BufferedPanel;
+			if (!(p.img is null))
+			{
+				crosshair.location = p.PanelToImage(e.Location);
+			}
+
+			ActiveTool?.MoveHandler(crosshair.location);
+		}
+
+		private void ImgPanelMouseEnter(object sender, EventArgs e)
+		{
+			crosshair.show = true;
+			ActiveTool?.MouseFocusHandler(true);
+		}
+
+		private void ImgPanelMouseLeave(object sender, EventArgs e)
+		{
+			crosshair.show = false;
+			ActiveTool?.MouseFocusHandler(false);
+		}
+
+		private void ImgPanelMouseClick(object sender, MouseEventArgs e)
+		{
+			if (!(ActiveTool is null))
+			{
+				var action = ActiveTool.ClickHandler(e);
+
+				// if the tool is resetting or exiting, save the object
+				if (action == ToolAction.RESET || action == ToolAction.EXIT)
+				{
+					objectList.Items.Add(ActiveTool.ResetAndGetObject());
+				}
+
+				// if the tool is aborting or exiting, delete the object
+				if (action == ToolAction.ABORT || action == ToolAction.EXIT)
+				{
+					CancelTool();
+				}
+			}
+		}
+
+		private bool IsMouseOverImgPanel()
+		{
+			if (TopPanel.ClientRectangle.Contains(PointToClient(MousePosition)) || BottomPanel.ClientRectangle.Contains(PointToClient(MousePosition)))
+			{
+				return true;
+			}
+			return false;
 		}
 	}
 }

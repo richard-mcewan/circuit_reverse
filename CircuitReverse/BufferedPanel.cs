@@ -8,9 +8,6 @@ namespace CircuitReverse
 	// Used on MainForm and LoadImageForm
 	public class BufferedPanel : Panel
 	{
-		// Reference to MainForm
-		public MainForm project = null;
-
 		// PCB image to show
 		public Image img = null;
 		public double ImageScale = 1.0;
@@ -23,85 +20,19 @@ namespace CircuitReverse
 		{
 			DoubleBuffered = true;
 			ResizeRedraw = true;
-
-			// set panel event handlers
-			Paint += new PaintEventHandler(PaintEvent);
-			MouseMove += new MouseEventHandler(MouseMoveEvent);
-			MouseEnter += new EventHandler(MouseEnterEvent);
-			MouseLeave += new EventHandler(MouseLeaveEvent);
-			MouseClick += new MouseEventHandler(MouseClickEvent);
-		}
-
-		private void PaintEvent(object s, PaintEventArgs e)
-		{
-			if (project is null)
-			{
-				// mitigate design-time exception
-				return;
-			}
-
-			var g = e.Graphics;
-			DrawPanelImage(g);
-			project.ActiveTool?.PaintHandler(Layer, ImageToPanel, g);
-
-			foreach (AbstractObject obj in project.objectList.Items)
-			{
-				obj.DrawObject(Layer, ImageToPanel, g);
-			}
-
-			DrawPanelCrosshair(g);
-		}
-
-		public void MouseMoveEvent(object s, MouseEventArgs e)
-		{
-			if (!(img is null))
-			{
-				project.Crosshair = PanelToImage(e.Location);
-			}
-			project.ActiveTool?.MoveHandler(project.Crosshair);
-		}
-
-		public void MouseEnterEvent(object s, EventArgs e)
-		{
-			project.ShowCrosshair = true;
-		}
-
-		public void MouseLeaveEvent(object s, EventArgs e)
-		{
-			project.ShowCrosshair = false;
-		}
-
-		private void MouseClickEvent(object s, MouseEventArgs e)
-		{
-			if (!(project.ActiveTool is null))
-			{
-				var action = project.ActiveTool.ClickHandler(e);
-
-				// if the tool is resetting or exiting, save the object
-				if (action == ToolAction.RESET || action == ToolAction.EXIT)
-				{
-					project.objectList.Items.Add(project.ActiveTool.ResetAndGetObject());
-				}
-
-				// if the tool is aborting or exiting, delete the object
-				if ( action == ToolAction.ABORT || action == ToolAction.EXIT )
-				{
-					project.ActiveTool = null;
-				}
-			}
 		}
 
 		public bool DrawPanelImage(Graphics g, float whscale = 0)
 		{
-			if ( img is null )
+			if (img is null)
 			{
 				// nothing to draw
 				return false;
 			}
 
-			if ( whscale != 0 )
+			if (whscale != 0)
 			{
-				// scaling widht for load preview
+				// scaling width for load preview
 				ImageWidthScale = (float)img.Size.Height / img.Size.Width / whscale;
 			}
 
@@ -136,12 +67,12 @@ namespace CircuitReverse
 
 		// Draw crosshair on panel
 		// Called from Paint event
-		public void DrawPanelCrosshair(Graphics g)
+		public void DrawPanelCrosshair(Graphics g, Crosshair c)
 		{
-			if (project.ShowCrosshair && !(img is null))
+			if (c.show && !(img is null))
 			{
 				Pen pn = new Pen(Color.Black, 1);
-				Point p = ImageToPanel(project.Crosshair);
+				Point p = ImageToPanel(c.location);
 				g.DrawLine(pn, p.X, 0, p.X, Size.Height);
 				g.DrawLine(pn, 0, p.Y, Size.Width, p.Y);
 			}

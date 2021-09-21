@@ -30,7 +30,8 @@ namespace CircuitReverse
 	}
 
 	// Parent class for objects to organize into list
-	public abstract class AbstractObject {
+	public abstract class AbstractObject
+	{
 		public ObjectType type = ObjectType.NONE;
 
 		public LayerEnum layer = LayerEnum.BOTH;
@@ -54,6 +55,8 @@ namespace CircuitReverse
 		public string NetName = "";
 
 		public List<Point> WirePoints = new List<Point>();
+		public Point ActivePoint = new Point(0, 0);
+		public bool ShowActivePoint = false;
 
 		public WireObject(LayerEnum l = LayerEnum.BOTH) : base(l)
 		{
@@ -68,28 +71,35 @@ namespace CircuitReverse
 			WirePoints = new List<Point>(w.WirePoints);
 		}
 
-		public void RemoveLastPoint()
+		public void AddActivePoint()
 		{
-			if ( WirePoints.Count > 0)
+			WirePoints.Add(ActivePoint);
+		}
+
+		private void DrawLine(Point p1, Point p2, PanelTransform tform, Graphics g)
+		{
+			using (var p = new Pen(WireColor, 4))
 			{
-				WirePoints.RemoveAt(WirePoints.Count - 1);
+				g.DrawLine(p, tform(p1), tform(p2));
 			}
 		}
 
 		public override void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g)
 		{
-			if ( layer != LayerEnum.BOTH && target_layer != layer )
+			if (layer != LayerEnum.BOTH && target_layer != layer)
 			{
 				// no drawing on this layer
 				return;
 			}
 
-			using (var p = new Pen(WireColor, 4))
+			for (int i = 0; i < WirePoints.Count - 1; i++)
 			{
-				for (int i = 0; i < WirePoints.Count - 1; i++)
-				{
-					g.DrawLine(p, tform(WirePoints[i]), tform(WirePoints[i + 1]));
-				}
+				DrawLine(WirePoints[i], WirePoints[i + 1], tform, g);
+			}
+
+			if (ShowActivePoint && WirePoints.Count > 0)
+			{
+				DrawLine(WirePoints[WirePoints.Count - 1], ActivePoint, tform, g);
 			}
 		}
 
@@ -129,7 +139,7 @@ namespace CircuitReverse
 				return;
 			}
 
-			using ( var p = new Pen(PinColor, 2) )
+			using (var p = new Pen(PinColor, 2))
 			{
 				const int hs = 5;
 				var loc = tform(new Point(Location.X - hs, Location.Y - hs));
@@ -169,27 +179,25 @@ namespace CircuitReverse
 		public abstract ToolAction ClickHandler(MouseEventArgs e);
 		public abstract void MoveHandler(Point p);
 		public abstract void PaintHandler(LayerEnum target_layer, PanelTransform tform, Graphics g);
+		public abstract void MouseFocusHandler(bool hover);
+		public abstract void KeyHandler(Keys key);
 	}
 
 	public class WireTool : AbstractTool
 	{
 		public WireObject wire;
 
-		public WireTool(int layer = 0) : base(layer)
+		public WireTool(int layer = 0, bool mouseover = false) : base(layer)
 		{
 			ResetAndGetObject();
+			wire.ShowActivePoint = mouseover;
 		}
 
 		public override AbstractObject ResetAndGetObject()
 		{
-			// remove last point (it is not placed just drawn)
-			wire?.RemoveLastPoint();
-
 			// return this wire and create a new
 			var tmp = wire;
 			wire = new WireObject(ActiveLayer);
-			wire.WirePoints.Add(new Point()); // last point is always updated to mouse position
-
 			return tmp;
 		}
 
@@ -198,7 +206,7 @@ namespace CircuitReverse
 			// left click adds node to wire
 			if (e.Button == MouseButtons.Left)
 			{
-				wire.WirePoints.Add(new Point());
+				wire.AddActivePoint();
 			}
 
 			// right click ends wire and begins a new one
@@ -219,23 +227,40 @@ namespace CircuitReverse
 
 		public override void MoveHandler(Point p)
 		{
-			wire.WirePoints[wire.WirePoints.Count - 1] = p;
+			wire.ActivePoint = p;
 		}
 
 		public override void PaintHandler(LayerEnum target_layer, PanelTransform tform, Graphics g)
 		{
 			wire.DrawObject(target_layer, tform, g);
 		}
+
+		public override void MouseFocusHandler(bool hover)
+		{
+			wire.ShowActivePoint = hover;
+		}
+
+		public override void KeyHandler(Keys key)
+		{
+			if (key == Keys.Back)
+			{
+				if (wire.WirePoints.Count > 0)
+				{
+					wire.WirePoints.RemoveAt(wire.WirePoints.Count - 1);
+				}
+			}
+		}
 	}
 
-	// Class for pin drawing tool
 	public class PinTool : AbstractTool
 	{
 		PinObject pin;
+		bool show = false;
 
-		public PinTool(int layer = 0) : base(layer)
+		public PinTool(int layer = 0, bool mouseover = false) : base(layer)
 		{
 			pin = new PinObject(ActiveLayer);
+			show = mouseover;
 		}
 
 		public override AbstractObject ResetAndGetObject()
@@ -267,7 +292,19 @@ namespace CircuitReverse
 
 		public override void PaintHandler(LayerEnum target_layer, PanelTransform tform, Graphics g)
 		{
-			pin.DrawObject(target_layer, tform, g);
+			if (show)
+			{
+				pin.DrawObject(target_layer, tform, g);
+			}
+		}
+
+		public override void MouseFocusHandler(bool hover)
+		{
+			show = hover;
+		}
+
+		public override void KeyHandler(Keys key)
+		{
 		}
 	}
 }

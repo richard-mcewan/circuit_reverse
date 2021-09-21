@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace CircuitReverse
 {
+	public struct Crosshair
+	{
+		public Point location;
+		public bool show;
+	}
 	public partial class MainForm
 	{
 		// Absolute path for project file
 		public string ProjectFilePath = "";
 
-		// Image panel crosshair
-		public Point Crosshair = new Point(0, 0);
-		public bool ShowCrosshair = false;
+		public Crosshair crosshair = new Crosshair() { location = new Point(0, 0), show = false };
 
 		// Active command
 		public AbstractTool ActiveTool = null;
@@ -22,14 +23,14 @@ namespace CircuitReverse
 		{
 			CancelTool();
 			toolWire.Checked = true;
-			ActiveTool = new WireTool(toolLayerSelect.SelectedIndex);
+			ActiveTool = new WireTool(toolLayerSelect.SelectedIndex, IsMouseOverImgPanel());
 		}
 
 		public void BeginPin(object s, EventArgs e)
 		{
 			CancelTool();
 			toolPin.Checked = true;
-			ActiveTool = new PinTool(toolLayerSelect.SelectedIndex);
+			ActiveTool = new PinTool(toolLayerSelect.SelectedIndex, IsMouseOverImgPanel());
 		}
 
 		public void CancelTool(object s = null, EventArgs e = null)
