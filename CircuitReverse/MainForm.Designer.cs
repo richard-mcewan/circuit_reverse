@@ -44,11 +44,16 @@
 			this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStripMain = new System.Windows.Forms.MenuStrip();
 			this.toolStripMain = new System.Windows.Forms.ToolStrip();
+			this.buttonSave = new System.Windows.Forms.ToolStripButton();
+			this.buttonOpen = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolCancel = new System.Windows.Forms.ToolStripButton();
 			this.toolWire = new System.Windows.Forms.ToolStripButton();
 			this.toolPin = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolLayerSelect = new System.Windows.Forms.ToolStripComboBox();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.objDelete = new System.Windows.Forms.ToolStripButton();
 			this.objectList = new System.Windows.Forms.ListBox();
 			this.BottomPanel = new CircuitReverse.BufferedPanel();
 			this.TopPanel = new CircuitReverse.BufferedPanel();
@@ -127,6 +132,7 @@
 			// 
 			// saveProjectToolStripMenuItem
 			// 
+			this.saveProjectToolStripMenuItem.Image = global::CircuitReverse.Properties.Resources.Save_16x;
 			this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
 			this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 			this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
@@ -135,6 +141,7 @@
 			// 
 			// saveProjectAsToolStripMenuItem
 			// 
+			this.saveProjectAsToolStripMenuItem.Image = global::CircuitReverse.Properties.Resources.SaveAs_16x;
 			this.saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
 			this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.saveProjectAsToolStripMenuItem.Text = "Save project as...";
@@ -142,6 +149,7 @@
 			// 
 			// openProjectToolStripMenuItem
 			// 
+			this.openProjectToolStripMenuItem.Image = global::CircuitReverse.Properties.Resources.OpenProject_16x;
 			this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
 			this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			this.openProjectToolStripMenuItem.Text = "Open project";
@@ -160,16 +168,48 @@
 			// toolStripMain
 			// 
 			this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonSave,
+            this.buttonOpen,
+            this.toolStripSeparator4,
             this.toolCancel,
             this.toolWire,
             this.toolPin,
             this.toolStripSeparator2,
-            this.toolLayerSelect});
+            this.toolLayerSelect,
+            this.toolStripSeparator3,
+            this.objDelete});
 			this.toolStripMain.Location = new System.Drawing.Point(0, 24);
 			this.toolStripMain.Name = "toolStripMain";
 			this.toolStripMain.Size = new System.Drawing.Size(884, 25);
 			this.toolStripMain.TabIndex = 7;
 			this.toolStripMain.Text = "toolStrip1";
+			// 
+			// buttonSave
+			// 
+			this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonSave.Image = global::CircuitReverse.Properties.Resources.Save_16x;
+			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonSave.Name = "buttonSave";
+			this.buttonSave.Size = new System.Drawing.Size(23, 22);
+			this.buttonSave.Text = "toolStripButton2";
+			this.buttonSave.ToolTipText = "Save (Ctrl+S)";
+			this.buttonSave.Click += new System.EventHandler(this.saveProjectMenu_Click);
+			// 
+			// buttonOpen
+			// 
+			this.buttonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonOpen.Image = global::CircuitReverse.Properties.Resources.OpenProject_16x;
+			this.buttonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonOpen.Name = "buttonOpen";
+			this.buttonOpen.Size = new System.Drawing.Size(23, 22);
+			this.buttonOpen.Text = "toolStripButton1";
+			this.buttonOpen.ToolTipText = "Open";
+			this.buttonOpen.Click += new System.EventHandler(this.openProjectMenu_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
 			// 
 			// toolCancel
 			// 
@@ -221,6 +261,22 @@
 			this.toolLayerSelect.Text = "Both layers (2)";
 			this.toolLayerSelect.ToolTipText = "Select layer to draw on";
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// objDelete
+			// 
+			this.objDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.objDelete.Image = global::CircuitReverse.Properties.Resources.RecycleBin_16x;
+			this.objDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.objDelete.Name = "objDelete";
+			this.objDelete.Size = new System.Drawing.Size(23, 22);
+			this.objDelete.Text = "toolStripButton1";
+			this.objDelete.ToolTipText = "Delete object";
+			this.objDelete.Click += new System.EventHandler(this.DeleteObject);
+			// 
 			// objectList
 			// 
 			this.objectList.FormattingEnabled = true;
@@ -229,6 +285,7 @@
 			this.objectList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.objectList.Size = new System.Drawing.Size(284, 186);
 			this.objectList.TabIndex = 8;
+			this.objectList.SelectedValueChanged += new System.EventHandler(this.objectList_SelectedValueChanged);
 			// 
 			// BottomPanel
 			// 
@@ -310,6 +367,11 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripComboBox toolLayerSelect;
 		public System.Windows.Forms.ListBox objectList;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripButton objDelete;
+		private System.Windows.Forms.ToolStripButton buttonSave;
+		private System.Windows.Forms.ToolStripButton buttonOpen;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 	}
 }
 

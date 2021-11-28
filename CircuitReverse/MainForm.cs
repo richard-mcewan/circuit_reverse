@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
+using System.Collections.Generic;
 
 namespace CircuitReverse
 {
@@ -88,6 +89,21 @@ namespace CircuitReverse
 			}
 		}
 
+		private void SaveObjectList(ZipArchive archive)
+		{
+			var entry = archive.CreateEntry("objects.txt");
+			using (var e = entry.Open())
+			{
+				using (var s = new StreamWriter(e))
+				{
+					foreach (AbstractObject item in objectList.Items)
+					{
+						s.WriteLine(item.ExportObject());
+					}
+				}
+			}
+		}
+
 		private void SaveProject(bool saveas)
 		{
 			if (ProjectFilePath == "" || saveas)
@@ -107,6 +123,7 @@ namespace CircuitReverse
 			{
 				SavePanelImg(TopPanel, zip, "top.png");
 				SavePanelImg(BottomPanel, zip, "bottom.png");
+				SaveObjectList(zip);
 			}
 			statusStripMain.Items["statusLabelDefault"].Text = "Project saved";
 		}
@@ -119,6 +136,31 @@ namespace CircuitReverse
 				using (var s = entry.Open())
 				{
 					panel.img = new Bitmap(s);
+				}
+			}
+		}
+
+		private void OpenObjectList(ZipArchive archive)
+		{
+			objectList.Items.Clear();
+
+			var entry = archive.GetEntry("objects.txt");
+			if (!(entry is null))
+			{
+				using (var e = entry.Open())
+				{
+					using (var s = new StreamReader(e))
+					{
+						while (!s.EndOfStream)
+						{
+							var str = s.ReadLine().Trim();
+							var obj = AbstractObject.ImportObject(str);
+							if (!(obj is null))
+							{
+								objectList.Items.Add(obj);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -139,6 +181,7 @@ namespace CircuitReverse
 			{
 				OpenPanelImg(TopPanel, zip, "top.png");
 				OpenPanelImg(BottomPanel, zip, "bottom.png");
+				OpenObjectList(zip);
 			}
 			statusStripMain.Items["statusLabelDefault"].Text = "Project loaded";
 		}
@@ -187,9 +230,11 @@ namespace CircuitReverse
 
 				ActiveTool?.PaintHandler(p.Layer, p.RelativeToPanel, g);
 
-				foreach (AbstractObject obj in objectList.Items)
+				var selectedIndexes = objectList.SelectedIndices;
+				for (int i = 0; i < objectList.Items.Count; i++)
 				{
-					obj.DrawObject(p.Layer, p.RelativeToPanel, g);
+					AbstractObject obj = objectList.Items[i] as AbstractObject;
+					obj.DrawObject(p.Layer, p.RelativeToPanel, g, selectedIndexes.Contains(i));
 				}
 
 				p.DrawPanelCrosshair(g, crosshair);
@@ -205,8 +250,6 @@ namespace CircuitReverse
 			}
 
 			ActiveTool?.MoveHandler(crosshair.location);
-
-			statusStripMain.Items["statusLabelDefault"].Text = crosshair.location.X.ToString() + " ; " + crosshair.location.Y.ToString();
 		}
 
 		private void ImgPanelMouseEnter(object sender, EventArgs e)
@@ -248,6 +291,10 @@ namespace CircuitReverse
 				return true;
 			}
 			return false;
+		}
+
+		private void objectList_SelectedValueChanged(object sender, EventArgs e)
+		{
 		}
 	}
 }

@@ -39,5 +39,17 @@ namespace CircuitReverse
 			toolWire.Checked = false;
 			toolPin.Checked = false;
 		}
+
+		public void DeleteObject(object s, EventArgs e)
+		{
+			var selected = objectList.SelectedIndices;
+			for (int i = objectList.Items.Count - 1; i >= 0; i--)
+			{
+				if (selected.Contains(i))
+				{
+					objectList.Items.RemoveAt(i);
+				}
+			}
+		}
 	}
 }

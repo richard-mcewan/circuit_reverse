@@ -1,6 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace CircuitReverse
 {
@@ -18,6 +20,18 @@ namespace CircuitReverse
 		{
 			X = p.X;
 			Y = p.Y;
+		}
+
+		public RelativePoint(string str)
+		{
+			var values = str.Substring(1, str.Length - 2).Split(';');
+			X = double.Parse(values[0], CultureInfo.InvariantCulture);
+			Y = double.Parse(values[1], CultureInfo.InvariantCulture);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("({0};{1})", X.ToString(CultureInfo.InvariantCulture), Y.ToString(CultureInfo.InvariantCulture));
 		}
 	}
 
@@ -63,7 +77,50 @@ namespace CircuitReverse
 			layer = o.layer;
 		}
 
-		public abstract void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g);
+		public abstract void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g, bool selected = false);
+		public abstract string ExportObject();
+
+		public static AbstractObject ImportObject(string descriptor)
+		{
+			var strarr = descriptor.Split(' ');
+			if (strarr.Length > 0)
+			{
+				if (strarr[0] == "WIRE")
+				{
+					// Format: WIRE L{layer} '{netname}' #{color} {point1} [{point2}] ...
+					var l = (LayerEnum)Enum.Parse(typeof(LayerEnum), strarr[1].Substring(1));
+					var ret = new WireObject(l);
+
+					ret.NetName = strarr[2].Substring(1, strarr[2].Length - 2);
+					ret.WireColor = Color.FromArgb(int.Parse(strarr[3].Substring(1), NumberStyles.HexNumber));
+
+					for (int i = 4; i < strarr.Length; i++)
+					{
+						var p = new RelativePoint(strarr[i]);
+						ret.WirePoints.Add(p);
+					}
+
+					return ret;
+				}
+				else if (strarr[0] == "PIN")
+				{
+					// Format: PIN L{layer} {component}:{number} '{netname}' #{color} {location}
+					var l = (LayerEnum)Enum.Parse(typeof(LayerEnum), strarr[1].Substring(1));
+					var ret = new PinObject(l);
+
+					var properties = strarr[2].Split(':');
+					ret.Component = properties[0];
+					ret.Number = properties[1];
+
+					ret.NetName = strarr[3].Substring(1, strarr[3].Length - 2);
+					ret.PinColor = Color.FromArgb(int.Parse(strarr[4].Substring(1), NumberStyles.HexNumber));
+					ret.Location = new RelativePoint(strarr[5]);
+
+					return ret;
+				}
+			}
+			return null;
+		}
 	}
 
 	public class WireObject : AbstractObject
@@ -72,6 +129,7 @@ namespace CircuitReverse
 		public string NetName = "";
 
 		public List<RelativePoint> WirePoints = new List<RelativePoint>();
+
 		public RelativePoint ActivePoint = new RelativePoint(0, 0);
 		public bool ShowActivePoint = false;
 
@@ -93,15 +151,23 @@ namespace CircuitReverse
 			WirePoints.Add(ActivePoint);
 		}
 
-		private void DrawLine(RelativePoint p1, RelativePoint p2, PanelTransform tform, Graphics g)
+		private void DrawLine(RelativePoint p1, RelativePoint p2, PanelTransform tform, Graphics g, bool selected)
 		{
+			if (selected)
+			{
+				using (var p = new Pen(Color.FromArgb(180, WireColor), 8))
+				{
+					g.DrawLine(p, tform(p1), tform(p2));
+				}
+			}
+
 			using (var p = new Pen(WireColor, 4))
 			{
 				g.DrawLine(p, tform(p1), tform(p2));
 			}
 		}
 
-		public override void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g)
+		public override void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g, bool selected = false)
 		{
 			if (layer != LayerEnum.BOTH && target_layer != layer)
 			{
@@ -111,18 +177,28 @@ namespace CircuitReverse
 
 			for (int i = 0; i < WirePoints.Count - 1; i++)
 			{
-				DrawLine(WirePoints[i], WirePoints[i + 1], tform, g);
+				DrawLine(WirePoints[i], WirePoints[i + 1], tform, g, selected);
 			}
 
 			if (ShowActivePoint && WirePoints.Count > 0)
 			{
-				DrawLine(WirePoints[WirePoints.Count - 1], ActivePoint, tform, g);
+				DrawLine(WirePoints[WirePoints.Count - 1], ActivePoint, tform, g, selected);
 			}
+		}
+
+		public override string ExportObject()
+		{
+			string exp = string.Format("WIRE L{0} '{1}' #{2}", layer.ToString(), NetName, WireColor.ToArgb().ToString("X8"));
+			foreach (var p in WirePoints)
+			{
+				exp += " " + p.ToString();
+			}
+			return exp;
 		}
 
 		public override string ToString()
 		{
-			return string.Format("LINE : Net {0} : {1}", NetName, WireColor.ToKnownColor().ToString());
+			return string.Format("WIRE : Net {0} : {1}", NetName, WireColor.ToKnownColor().ToString());
 		}
 	}
 
@@ -131,7 +207,7 @@ namespace CircuitReverse
 		public Color PinColor = Color.Blue;
 		public string NetName = "";
 		public string Component = "";
-		public int Number = -1;
+		public string Number = "0";
 		public RelativePoint Location;
 
 		public PinObject(LayerEnum l) : base(l)
@@ -148,7 +224,7 @@ namespace CircuitReverse
 		}
 
 		// Draw pin on panel
-		public override void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g)
+		public override void DrawObject(LayerEnum target_layer, PanelTransform tform, Graphics g, bool selected = false)
 		{
 			if (layer != LayerEnum.BOTH && target_layer != layer)
 			{
@@ -156,12 +232,27 @@ namespace CircuitReverse
 				return;
 			}
 
+			var loc = tform(new RelativePoint(Location.X, Location.Y));
+
+			if (selected)
+			{
+				using (var p = new Pen(Color.FromArgb(180, PinColor), 6))
+				{
+					const int hs = 7;
+					g.DrawRectangle(p, loc.X - hs, loc.Y - hs, hs * 2, hs * 2);
+				}
+			}
+
 			using (var p = new Pen(PinColor, 2))
 			{
 				const int hs = 5;
-				var loc = tform(new RelativePoint(Location.X - hs, Location.Y - hs));
-				g.DrawRectangle(p, loc.X, loc.Y, hs * 2, hs * 2);
+				g.DrawRectangle(p, loc.X - hs, loc.Y - hs, hs * 2, hs * 2);
 			}
+		}
+
+		public override string ExportObject()
+		{
+			return string.Format("PIN L{0} {1}:{2} '{3}' #{4} {5}", layer.ToString(), Component, Number, NetName, PinColor.ToArgb().ToString("X8"), Location.ToString());
 		}
 
 		public override string ToString()
@@ -215,6 +306,13 @@ namespace CircuitReverse
 			// return this wire and create a new
 			var tmp = wire;
 			wire = new WireObject(ActiveLayer);
+
+			if (!(tmp is null))
+			{
+				wire.ShowActivePoint = tmp.ShowActivePoint;
+				tmp.ShowActivePoint = false;
+			}
+
 			return tmp;
 		}
 
@@ -229,8 +327,8 @@ namespace CircuitReverse
 			// right click ends wire and begins a new one
 			if (e.Button == MouseButtons.Right)
 			{
-				// save wire if it has at least 2 points (not including last one)
-				if (wire.WirePoints.Count > 2)
+				// save wire if it has at least 2 points
+				if (wire.WirePoints.Count >= 2)
 				{
 					return ToolAction.RESET;
 				}
