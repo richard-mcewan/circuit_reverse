@@ -5,7 +5,7 @@ namespace CircuitReverse
 {
 	public struct Crosshair
 	{
-		public Point location;
+		public RelativePoint location;
 		public bool show;
 	}
 	public partial class MainForm
@@ -13,7 +13,7 @@ namespace CircuitReverse
 		// Absolute path for project file
 		public string ProjectFilePath = "";
 
-		public Crosshair crosshair = new Crosshair() { location = new Point(0, 0), show = false };
+		public Crosshair crosshair = new Crosshair() { location = new RelativePoint(0, 0), show = false };
 
 		// Active command
 		public AbstractTool ActiveTool = null;

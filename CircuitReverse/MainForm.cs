@@ -180,16 +180,20 @@ namespace CircuitReverse
 		{
 			var p = sender as BufferedPanel;
 			var g = e.Graphics;
-			p.DrawPanelImage(g);
 
-			ActiveTool?.PaintHandler(p.Layer, p.ImageToPanel, g);
-
-			foreach (AbstractObject obj in objectList.Items)
+			if (p.ImageLoaded())
 			{
-				obj.DrawObject(p.Layer, p.ImageToPanel, g);
-			}
+				p.DrawPanelImage(g);
 
-			p.DrawPanelCrosshair(g, crosshair);
+				ActiveTool?.PaintHandler(p.Layer, p.RelativeToPanel, g);
+
+				foreach (AbstractObject obj in objectList.Items)
+				{
+					obj.DrawObject(p.Layer, p.RelativeToPanel, g);
+				}
+
+				p.DrawPanelCrosshair(g, crosshair);
+			}
 		}
 
 		private void ImgPanelMouseMove(object sender, MouseEventArgs e)
@@ -197,10 +201,12 @@ namespace CircuitReverse
 			var p = sender as BufferedPanel;
 			if (!(p.img is null))
 			{
-				crosshair.location = p.PanelToImage(e.Location);
+				crosshair.location = p.PanelToRelative(e.Location);
 			}
 
 			ActiveTool?.MoveHandler(crosshair.location);
+
+			statusStripMain.Items["statusLabelDefault"].Text = crosshair.location.X.ToString() + " ; " + crosshair.location.Y.ToString();
 		}
 
 		private void ImgPanelMouseEnter(object sender, EventArgs e)

@@ -22,14 +22,13 @@ namespace CircuitReverse
 			ResizeRedraw = true;
 		}
 
-		public bool DrawPanelImage(Graphics g, float whscale = 0)
+		public bool ImageLoaded()
 		{
-			if (img is null)
-			{
-				// nothing to draw
-				return false;
-			}
+			return !(img is null);
+		}
 
+		public void DrawPanelImage(Graphics g, float whscale = 0)
+		{
 			if (whscale != 0)
 			{
 				// scaling width for load preview
@@ -61,8 +60,6 @@ namespace CircuitReverse
 				g.DrawImage(img, 0, (fh - h) / 2, w, h);
 				ImageScale = scale_x;
 			}
-
-			return true;
 		}
 
 		// Draw crosshair on panel
@@ -72,10 +69,28 @@ namespace CircuitReverse
 			if (c.show && !(img is null))
 			{
 				Pen pn = new Pen(Color.Black, 1);
-				Point p = ImageToPanel(c.location);
+				Point p = RelativeToPanel(c.location);
 				g.DrawLine(pn, p.X, 0, p.X, Size.Height);
 				g.DrawLine(pn, 0, p.Y, Size.Width, p.Y);
 			}
+		}
+
+		// Get relative corrdinates from panel coordinates (transform)
+		// Panel coordinates: X: [0, width], Y: [0, height], centered on top left
+		// Relative coordinates: X: [-1, 1], Y: [-1, 1], centered on image center
+		public RelativePoint PanelToRelative(Point p)
+		{
+			var x = (p.X - Size.Width / 2.0) * 2 / ImageScale / img.Width;
+			var y = (p.Y - Size.Height / 2.0) * 2 / ImageScale / img.Height;
+			return new RelativePoint(x, y);
+		}
+
+		// Get panel coordinates from relative coordinates (transform)
+		public Point RelativeToPanel(RelativePoint p)
+		{
+			var x = p.X * img.Width * ImageScale * 0.5 + Size.Width / 2.0;
+			var y = p.Y * img.Height * ImageScale * 0.5 + Size.Height / 2.0;
+			return new Point(ImageClipper.dtoi(x), ImageClipper.dtoi(y));
 		}
 
 		// Get image corrdinates from panel coordinates (transform)

@@ -4,7 +4,24 @@ using System.Windows.Forms;
 
 namespace CircuitReverse
 {
-	public delegate Point PanelTransform(Point p);
+	public struct RelativePoint
+	{
+		public double X, Y;
+
+		public RelativePoint(double x, double y)
+		{
+			X = x;
+			Y = y;
+		}
+
+		public RelativePoint(RelativePoint p)
+		{
+			X = p.X;
+			Y = p.Y;
+		}
+	}
+
+	public delegate Point PanelTransform(RelativePoint p);
 
 	public enum LayerEnum
 	{
@@ -54,8 +71,8 @@ namespace CircuitReverse
 		public Color WireColor = Color.Red;
 		public string NetName = "";
 
-		public List<Point> WirePoints = new List<Point>();
-		public Point ActivePoint = new Point(0, 0);
+		public List<RelativePoint> WirePoints = new List<RelativePoint>();
+		public RelativePoint ActivePoint = new RelativePoint(0, 0);
 		public bool ShowActivePoint = false;
 
 		public WireObject(LayerEnum l = LayerEnum.BOTH) : base(l)
@@ -68,7 +85,7 @@ namespace CircuitReverse
 			type = ObjectType.LINE;
 			WireColor = w.WireColor;
 			NetName = w.NetName;
-			WirePoints = new List<Point>(w.WirePoints);
+			WirePoints = new List<RelativePoint>(w.WirePoints);
 		}
 
 		public void AddActivePoint()
@@ -76,7 +93,7 @@ namespace CircuitReverse
 			WirePoints.Add(ActivePoint);
 		}
 
-		private void DrawLine(Point p1, Point p2, PanelTransform tform, Graphics g)
+		private void DrawLine(RelativePoint p1, RelativePoint p2, PanelTransform tform, Graphics g)
 		{
 			using (var p = new Pen(WireColor, 4))
 			{
@@ -115,11 +132,11 @@ namespace CircuitReverse
 		public string NetName = "";
 		public string Component = "";
 		public int Number = -1;
-		public Point Location;
+		public RelativePoint Location;
 
 		public PinObject(LayerEnum l) : base(l)
 		{
-			Location = new Point();
+			Location = new RelativePoint();
 		}
 
 		public PinObject(PinObject o) : base(o)
@@ -142,7 +159,7 @@ namespace CircuitReverse
 			using (var p = new Pen(PinColor, 2))
 			{
 				const int hs = 5;
-				var loc = tform(new Point(Location.X - hs, Location.Y - hs));
+				var loc = tform(new RelativePoint(Location.X - hs, Location.Y - hs));
 				g.DrawRectangle(p, loc.X, loc.Y, hs * 2, hs * 2);
 			}
 		}
@@ -177,7 +194,7 @@ namespace CircuitReverse
 
 		public abstract AbstractObject ResetAndGetObject();
 		public abstract ToolAction ClickHandler(MouseEventArgs e);
-		public abstract void MoveHandler(Point p);
+		public abstract void MoveHandler(RelativePoint p);
 		public abstract void PaintHandler(LayerEnum target_layer, PanelTransform tform, Graphics g);
 		public abstract void MouseFocusHandler(bool hover);
 		public abstract void KeyHandler(Keys key);
@@ -225,7 +242,7 @@ namespace CircuitReverse
 			return ToolAction.NONE;
 		}
 
-		public override void MoveHandler(Point p)
+		public override void MoveHandler(RelativePoint p)
 		{
 			wire.ActivePoint = p;
 		}
@@ -285,7 +302,7 @@ namespace CircuitReverse
 			return ToolAction.NONE;
 		}
 
-		public override void MoveHandler(Point p)
+		public override void MoveHandler(RelativePoint p)
 		{
 			pin.Location = p;
 		}

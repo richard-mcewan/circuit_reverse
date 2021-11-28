@@ -54,6 +54,9 @@ namespace CircuitReverse
 		private void ImagePanel_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
+
+			ImagePanel.DrawPanelImage(g, (float)ImageScaleInput.Value);
+
 			foreach (var p in ClipPoints)
 			{
 				var pp = ImagePanel.ImageToPanel(p);
@@ -67,7 +70,7 @@ namespace CircuitReverse
 			if (ClipPoints.Count < 4)
 			{
 				Point p = ImagePanel.PanelToImage(e.Location);
-				if ( p.X < 0 || p.Y < 0 || p.X > ImagePanel.img.Size.Width || p.Y > ImagePanel.img.Size.Height )
+				if ( p.X < 0 || p.Y < 0 || p.X > ImagePanel.img.Width || p.Y > ImagePanel.img.Height )
 				{
 					return;
 				}
